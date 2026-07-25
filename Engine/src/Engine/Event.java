@@ -1,4 +1,6 @@
-abstract public class Event {
+package Engine;
+
+abstract class Event {
     int id;
     int mmId;
     String name;

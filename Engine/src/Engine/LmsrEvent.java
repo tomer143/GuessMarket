@@ -1,4 +1,6 @@
-public class LmsrEvent extends Event {
+package Engine;
+
+class LmsrEvent extends Event {
     float instability;
 
     @Override
