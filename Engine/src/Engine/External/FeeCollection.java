@@ -1,4 +1,4 @@
-package Engine;
+package Engine.External;
 
 public enum FeeCollection {
     OnPurchase,
