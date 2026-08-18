@@ -1,6 +1,8 @@
 package Engine;
 
-class Option {
+import java.io.Serializable;
+
+class Option implements Serializable {
     private final int id;
     private final String name;
 

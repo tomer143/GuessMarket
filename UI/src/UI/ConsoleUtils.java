@@ -54,6 +54,18 @@ class ConsoleUtils {
         return selection - 1;
     }
 
+    public Integer pickFromRange(String prompt, String itemNoun, int min, int max) {
+        Integer selection = readInt(prompt);
+        if (selection == null) return null;
+
+        if (selection < min || selection > max) {
+            out.println("There is no " + itemNoun + " numbered " + selection + ".");
+            return null;
+        }
+
+        return selection;
+    }
+
     public static String formatDecimal(double value) {
         return String.format("%.2f", value);
     }

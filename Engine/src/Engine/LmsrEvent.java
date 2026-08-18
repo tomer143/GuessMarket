@@ -64,8 +64,7 @@ class LmsrEvent extends Event {
         double payout = totalWinningShares - feeAmount;
 
         this.totalFeeCollected += feeAmount;
-        Manager.getInstance().getMoneyMaker().adjustBalance(this.accountBalance - payout);
-        this.accountBalance = 0;
+        this.accountBalance -= payout;
         this.isActive = false;
         this.winningOption = winner;
     }

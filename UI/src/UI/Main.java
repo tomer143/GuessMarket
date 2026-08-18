@@ -14,16 +14,18 @@ public class Main {
 
         while (running) {
             printMenu();
-            String choice = consoleUtils.readLine("Choose a menu option (number from 1 to 6): ");
+            String choice = consoleUtils.readLine("Choose a menu option (number from 1 to 8): ");
 
             switch (choice) {
                 case "1" -> loadEventsFile();
-                case "2" -> displayEvents();
+                case "2" -> displayEvents(engine.getAllEvents());
                 case "3" -> showEventStatus();
                 case "4" -> participateInEvent();
                 case "5" -> closeEvent();
                 case "6" -> running = false;
-                default -> consoleUtils.println("Unknown option: \"" + choice + "\". Please choose a number from 1 to 6.");
+                case "7" -> saveState();
+                case "8" -> loadState();
+                default -> consoleUtils.println("Unknown option: \"" + choice + "\". Please choose a number from 1 to 8.");
             }
         }
 
@@ -38,6 +40,8 @@ public class Main {
         consoleUtils.println("4. Participate in an event");
         consoleUtils.println("5. Close an event");
         consoleUtils.println("6. Exit");
+        consoleUtils.println("7. Save the current state to a file");
+        consoleUtils.println("8. Load a previously saved state from a file");
     }
 
     private static void loadEventsFile() {
@@ -51,9 +55,7 @@ public class Main {
         }
     }
 
-    private static void displayEvents() {
-        List<EventDetails> events = engine.getAllEvents();
-
+    private static void displayEvents(List<EventDetails> events) {
         if (events.isEmpty()) {
             consoleUtils.println("There are no events loaded. Please load an events file first.");
             return;
@@ -113,7 +115,7 @@ public class Main {
             return;
         }
 
-        Integer optionIndex = consoleUtils.pickFromList(selected.optionNames(), "Choose an option by number: ", "option");
+        Integer optionIndex = consoleUtils.pickFromList(selected.optionNames(), "Choose an option by number (number from 1 to " +selected.optionNames().size() + "): ", "option");
         if (optionIndex == null) return;
 
         Integer amount = consoleUtils.readInt("How many shares would you like to buy? ");
@@ -152,7 +154,7 @@ public class Main {
             return;
         }
 
-        Integer winningOptionIndex = consoleUtils.pickFromList(selected.optionNames(), "Choose an option by number: ", "option");
+        Integer winningOptionIndex = consoleUtils.pickFromList(selected.optionNames(), "Choose an option by number (number from 1 to " +selected.optionNames().size() + "): ", "option");
         if (winningOptionIndex == null) return;
 
         try {
@@ -165,14 +167,34 @@ public class Main {
         }
     }
 
+    private static void saveState() {
+        String path = consoleUtils.readLine("Enter the full path (without extension) to save the state to: ");
+
+        try {
+            engine.saveState(path);
+            consoleUtils.println("The state was saved successfully.");
+        } catch (GuessMarketException exception) {
+            consoleUtils.println("Could not save the state: " + exception.getMessage());
+        }
+    }
+
+    private static void loadState() {
+        String path = consoleUtils.readLine("Enter the full path (without extension) to load the state from: ");
+
+        try {
+            engine.loadState(path);
+            consoleUtils.println("The state was loaded successfully.");
+        } catch (GuessMarketException exception) {
+            consoleUtils.println("Could not load the state: " + exception.getMessage());
+        }
+    }
+
     private static EventDetails pickEvent(List<EventDetails> events) {
-        List<String> labels = events.stream()
-                .map(event -> event.name() + (event.isActive() ? "" : " (closed)"))
-                .toList();
+        displayEvents(events);
 
-        Integer index = consoleUtils.pickFromList(labels, "Choose an event by number: ", "event");
+        Integer selection = consoleUtils.pickFromRange("Choose an event by number (number from 1 to " + events.size() + "): ", "event", 1, events.size());
 
-        return index != null ? events.get(index) : null;
+        return selection != null ? events.get(selection - 1) : null;
     }
 
     private static void printEventStatus(EventStatus status) {

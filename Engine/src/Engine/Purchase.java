@@ -1,6 +1,8 @@
 package Engine;
 
-class Purchase {
+import java.io.Serializable;
+
+class Purchase implements Serializable {
     private final int eventId;
     private final int amount;
     private final double price;

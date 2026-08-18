@@ -32,4 +32,12 @@ public class GuessMarketEngine {
 
         return event.getStatus();
     }
+
+    public void saveState(String path) throws GuessMarketException {
+        StateFileManager.save(path);
+    }
+
+    public void loadState(String path) throws GuessMarketException {
+        StateFileManager.load(path);
+    }
 }

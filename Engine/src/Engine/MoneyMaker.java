@@ -1,6 +1,8 @@
 package Engine;
 
-class MoneyMaker {
+import java.io.Serializable;
+
+class MoneyMaker implements Serializable {
     private final int id;
     private double balance;
 

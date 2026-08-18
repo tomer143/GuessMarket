@@ -4,6 +4,9 @@ import Engine.External.FeeCollection;
 import Engine.External.GuessMarketException;
 import Engine.Xml.Comision;
 import Engine.Xml.GMEvent;
+import Engine.Xml.GMLMSR;
+import Engine.Xml.GMMethod;
+import Engine.Xml.GMOptions;
 import Engine.Xml.GuessMarket;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -21,6 +24,9 @@ class EventFileLoader {
         validatePath(path);
 
         GuessMarket guessMarket = parseDocument(path);
+        if (guessMarket == null)
+            throw new GuessMarketException("The file could not be parsed as valid XML.");
+
         if (guessMarket.getGMEvents() == null)
             throw new GuessMarketException("The file does not contain a GM-events section.");
 
@@ -32,6 +38,9 @@ class EventFileLoader {
         Set<Integer> existIds = new HashSet<>();
 
         for (GMEvent eventElement : eventElements) {
+            if (eventElement == null)
+                throw new GuessMarketException("The file contains an empty event entry.");
+
             LmsrEvent event = parseEvent(eventElement);
 
             if (!existIds.add(event.id))
@@ -70,23 +79,31 @@ class EventFileLoader {
             return (GuessMarket) unmarshaller.unmarshal(new File(path));
         } catch (JAXBException exception) {
             throw new GuessMarketException("The file could not be parsed as valid XML: " + getParsingErrorMessage(exception));
+        } catch (ClassCastException exception) {
+            throw new GuessMarketException("The file's root element is not a Guess-Market document.");
         }
     }
 
     private static LmsrEvent parseEvent(GMEvent eventElement) throws GuessMarketException {
         try {
             LmsrEvent event = new LmsrEvent();
-            event.name = eventElement.getName().trim();
+
+            String name = eventElement.getName();
+            if (name == null || name.isBlank())
+                throw new GuessMarketException("The file contains an event with a missing or blank name.");
+            event.name = name.trim();
 
             int id = eventElement.getId();
             if (id == 0)
                 throw new GuessMarketException("Event \"" + event.name + "\" is missing a valid numeric id.");
             event.id = id;
 
-            event.description = eventElement.getDescription().trim();
+            String description = eventElement.getDescription();
+            if (description == null)
+                throw new GuessMarketException("Event \"" + event.name + "\" is missing a description.");
+            event.description = description.trim();
 
             Comision comision = eventElement.getComision();
-
             if (comision == null)
                 throw new GuessMarketException("Event \"" + event.name + "\" is missing a valid comision value.");
 
@@ -95,9 +112,10 @@ class EventFileLoader {
                 throw new GuessMarketException("Event \"" + event.name + "\" has an invalid fee of " + feePercent + "% (must be between 0 and 90).");
             event.feePercent = feePercent;
 
-            if (comision.getType() == null)
+            String feeType = comision.getType();
+            if (feeType == null || feeType.isBlank())
                 throw new GuessMarketException("Event \"" + event.name + "\" is missing a valid comision type.");
-            String feeType = comision.getType().trim();
+            feeType = feeType.trim();
             if (feeType.equalsIgnoreCase("on-close"))
                 event.feeCollection = FeeCollection.OnClose;
             else if (feeType.equalsIgnoreCase("on-purchase"))
@@ -105,17 +123,35 @@ class EventFileLoader {
             else
                 throw new GuessMarketException("Event \"" + event.name + "\" has an unknown fee collection type \"" + feeType + "\".");
 
-            List<String> optionNames = eventElement.getGMOptions().getGMOption();
+            GMOptions gmOptions = eventElement.getGMOptions();
+            if (gmOptions == null)
+                throw new GuessMarketException("Event \"" + event.name + "\" is missing a GM-options section.");
+
+            List<String> optionNames = gmOptions.getGMOption();
             if (optionNames.size() != 2)
                 throw new GuessMarketException("Event \"" + event.name + "\" must have exactly 2 options (found " + optionNames.size() + ").");
 
             List<Option> options = new ArrayList<>();
             for (int i = 0; i < optionNames.size(); i++) {
-                options.add(new Option(i + 1, optionNames.get(i).trim()));
+                String optionName = optionNames.get(i);
+                if (optionName == null || optionName.isBlank())
+                    throw new GuessMarketException("Event \"" + event.name + "\" has an option with a missing or blank name.");
+                options.add(new Option(i + 1, optionName.trim()));
             }
             event.options = options;
 
-            event.instability = eventElement.getGMMethod().getGMLMSR().getB();
+            GMMethod gmMethod = eventElement.getGMMethod();
+            if (gmMethod == null)
+                throw new GuessMarketException("Event \"" + event.name + "\" is missing a GM-method section.");
+
+            GMLMSR gmlmsr = gmMethod.getGMLMSR();
+            if (gmlmsr == null)
+                throw new GuessMarketException("Event \"" + event.name + "\" is missing a GM-LMSR section.");
+
+            int b = gmlmsr.getB();
+            if (b <= 0)
+                throw new GuessMarketException("Event \"" + event.name + "\" has an invalid liquidity value (b), it must be a positive number.");
+            event.instability = b;
 
             event.isActive = true;
             event.mmId = 1;

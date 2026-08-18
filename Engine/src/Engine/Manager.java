@@ -2,10 +2,11 @@ package Engine;
 
 import Engine.External.GuessMarketException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-class Manager {
+class Manager implements Serializable {
     private static Manager global;
 
     private List<Event> events;
@@ -23,6 +24,10 @@ class Manager {
             global = new Manager();
 
         return global;
+    }
+
+    public static void restoreInstance(Manager restored) {
+        global = restored;
     }
 
     public List<Event> getEvents() {

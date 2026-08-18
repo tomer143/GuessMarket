@@ -2,11 +2,12 @@ package Engine;
 
 import Engine.External.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class Event {
+abstract class Event implements Serializable {
     protected int id;
     protected int mmId;
     protected String name;
