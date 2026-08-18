@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: 
-
+Class-Path: jakarta.activation-api.jar jakarta.xml.bind-api.jar jaxb-core.jar jaxb-impl.jar
