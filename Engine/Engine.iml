@@ -7,5 +7,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="jaxb-ri-4.0.5">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jaxb-ri-4.0.5/mod/jakarta.xml.bind-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jaxb-ri-4.0.5/mod/jaxb-core.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jaxb-ri-4.0.5/mod/jaxb-impl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

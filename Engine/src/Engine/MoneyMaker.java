@@ -4,20 +4,20 @@ class MoneyMaker {
     private final int id;
     private double balance;
 
-    MoneyMaker(int id, double balance) {
+    public MoneyMaker(int id, double balance) {
         this.id = id;
         this.balance = balance;
     }
 
-    int id() {
+    public int id() {
         return id;
     }
 
-    double balance() {
+    public double balance() {
         return balance;
     }
 
-    void adjustBalance(double delta) {
+    public void adjustBalance(double delta) {
         this.balance += delta;
     }
 }

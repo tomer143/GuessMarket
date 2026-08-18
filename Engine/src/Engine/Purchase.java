@@ -6,26 +6,26 @@ class Purchase {
     private final double price;
     private final Option option;
 
-    Purchase(int eventId, int amount, double price, Option option) {
+    public Purchase(int eventId, int amount, double price, Option option) {
         this.eventId = eventId;
         this.amount = amount;
         this.price = price;
         this.option = option;
     }
 
-    int eventId() {
+    public int eventId() {
         return eventId;
     }
 
-    int amount() {
+    public int amount() {
         return amount;
     }
 
-    double price() {
+    public double price() {
         return price;
     }
 
-    Option option() {
+    public Option option() {
         return option;
     }
 }
