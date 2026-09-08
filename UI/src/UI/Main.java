@@ -72,7 +72,7 @@ public class Main {
         consoleUtils.println("   Description: " + event.description());
         consoleUtils.println("   Fee: " + event.feePercent() + "% (" + feeCollectionLabel(event.feeCollection()) + ")");
         consoleUtils.println("   Options: " + String.join(", ", event.optionNames()));
-        consoleUtils.println("   Status: " + (event.isActive() ? "Active" : "Closed"));
+        consoleUtils.println("   Status: " + (event.phase() == EventPhase.ACTIVE ? "Active" : "Closed"));
     }
 
     private static String feeCollectionLabel(FeeCollection feeCollection) {
@@ -219,7 +219,7 @@ public class Main {
             }
         }
 
-        if (!status.isActive()) {
+        if (status.phase() == EventPhase.CLOSED) {
             consoleUtils.println("   This event is closed. Winning option: " + status.winningOptionName());
         }
     }

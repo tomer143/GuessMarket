@@ -2,21 +2,23 @@ package Engine.External;
 
 import java.util.List;
 
-public class EventStatus {
+public class OrderBookStatus {
     private final int eventId;
     private final String eventName;
     private final EventPhase phase;
-    private final List<OptionStatus> optionStatuses;
+    private final int baseValue;
+    private final List<OptionMarketData> options;
     private final double accountBalance;
     private final double totalFeeCollected;
-    private final List<TradeRecord> history;
+    private final List<TradeHistoryRecord> history;
     private final String winningOptionName;
 
-    public EventStatus(int eventId, String eventName, EventPhase phase, List<OptionStatus> optionStatuses, double accountBalance, double totalFeeCollected, List<TradeRecord> history, String winningOptionName) {
+    public OrderBookStatus(int eventId, String eventName, EventPhase phase, int baseValue, List<OptionMarketData> options, double accountBalance, double totalFeeCollected, List<TradeHistoryRecord> history, String winningOptionName) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.phase = phase;
-        this.optionStatuses = optionStatuses;
+        this.baseValue = baseValue;
+        this.options = options;
         this.accountBalance = accountBalance;
         this.totalFeeCollected = totalFeeCollected;
         this.history = history;
@@ -35,8 +37,12 @@ public class EventStatus {
         return phase;
     }
 
-    public List<OptionStatus> optionStatuses() {
-        return optionStatuses;
+    public int baseValue() {
+        return baseValue;
+    }
+
+    public List<OptionMarketData> options() {
+        return options;
     }
 
     public double accountBalance() {
@@ -47,7 +53,7 @@ public class EventStatus {
         return totalFeeCollected;
     }
 
-    public List<TradeRecord> history() {
+    public List<TradeHistoryRecord> history() {
         return history;
     }
 

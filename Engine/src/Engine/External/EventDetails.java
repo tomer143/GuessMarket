@@ -9,16 +9,22 @@ public class EventDetails {
     private final int feePercent;
     private final FeeCollection feeCollection;
     private final List<String> optionNames;
-    private final boolean isActive;
+    private final EventPhase phase;
+    private final TradingMethod method;
+    private final String mmUsername;
+    private final double accountBalance;
 
-    public EventDetails(int id, String name, String description, int feePercent, FeeCollection feeCollection, List<String> optionNames, boolean isActive) {
+    public EventDetails(int id, String name, String description, int feePercent, FeeCollection feeCollection, List<String> optionNames, EventPhase phase, TradingMethod method, String mmUsername, double accountBalance) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.feePercent = feePercent;
         this.feeCollection = feeCollection;
         this.optionNames = optionNames;
-        this.isActive = isActive;
+        this.phase = phase;
+        this.method = method;
+        this.mmUsername = mmUsername;
+        this.accountBalance = accountBalance;
     }
 
     public int id() {
@@ -45,7 +51,19 @@ public class EventDetails {
         return optionNames;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public EventPhase phase() {
+        return phase;
+    }
+
+    public TradingMethod method() {
+        return method;
+    }
+
+    public String mmUsername() {
+        return mmUsername;
+    }
+
+    public double accountBalance() {
+        return accountBalance;
     }
 }

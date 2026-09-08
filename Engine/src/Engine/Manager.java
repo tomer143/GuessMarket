@@ -11,12 +11,16 @@ class Manager implements Serializable {
 
     private List<Event> events;
     private List<Purchase> purchases;
-    private MoneyMaker moneyMaker;
+    private List<User> users;
+    private int nextOrderId;
+    private int nextTradeId;
 
     private Manager() {
         this.events = new ArrayList<Event>();
         this.purchases = new ArrayList<Purchase>();
-        this.moneyMaker = new MoneyMaker(1, 0);
+        this.users = new ArrayList<User>();
+        this.nextOrderId = 0;
+        this.nextTradeId = 0;
     }
 
     public static Manager getInstance() {
@@ -41,8 +45,23 @@ class Manager implements Serializable {
                 .orElseThrow(() -> new GuessMarketException("No event with id " + id + " is currently loaded."));
     }
 
-    public MoneyMaker getMoneyMaker() {
-        return this.moneyMaker;
+    public List<User> getUsers() {
+        return this.users;
+    }
+
+    public User getUserByUsername(String username) throws GuessMarketException {
+        return this.users.stream()
+                .filter(user -> user.username().equals(username))
+                .findFirst()
+                .orElseThrow(() -> new GuessMarketException("No user named \"" + username + "\" is currently loaded."));
+    }
+
+    public int nextOrderId() {
+        return ++nextOrderId;
+    }
+
+    public int nextTradeId() {
+        return ++nextTradeId;
     }
 
     public void addPurchase(Purchase purchase) {
@@ -60,9 +79,11 @@ class Manager implements Serializable {
                 .sum();
     }
 
-    public void replaceState(List<Event> newEvents, MoneyMaker newMoneyMaker) {
+    public void replaceState(List<Event> newEvents, List<User> newUsers) {
         this.events = newEvents;
-        this.moneyMaker = newMoneyMaker;
+        this.users = newUsers;
         this.purchases = new ArrayList<>();
+        this.nextOrderId = 0;
+        this.nextTradeId = 0;
     }
 }

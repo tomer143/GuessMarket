@@ -3,46 +3,51 @@ package Engine;
 import Engine.External.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 abstract class Event implements Serializable {
     protected int id;
-    protected int mmId;
+    protected String mmUsername;
     protected String name;
     protected String description;
     protected int feePercent;
     protected FeeCollection feeCollection;
     protected List<Option> options;
-    protected boolean isActive;
+    protected EventPhase phase = EventPhase.NOT_ACTIVE;
     protected double accountBalance;
     protected double totalFeeCollected;
     protected Option winningOption;
 
-    protected abstract double getPrice(Option option, int amount);
+    protected abstract double getPrice(Option option, int amount) throws GuessMarketException;
     protected abstract double getOptionChance(Option option);
-    protected abstract PurchaseResult buy(int optionIndex, int amount) throws GuessMarketException;
-    protected abstract void close(int winningOptionIndex) throws GuessMarketException;
+    protected abstract TradingMethod getTradingMethod();
+    protected abstract void open(String requestingUsername) throws GuessMarketException;
+    protected abstract void close(int winningOptionIndex, String requestingUsername) throws GuessMarketException;
 
     protected EventDetails getDetails() {
         List<String> optionNames = this.options.stream().map(Option::name).toList();
 
-        return new EventDetails(this.id, this.name, this.description, this.feePercent, this.feeCollection, optionNames, this.isActive);
+        return new EventDetails(this.id, this.name, this.description, this.feePercent, this.feeCollection, optionNames, this.phase, this.getTradingMethod(), this.mmUsername, this.accountBalance);
     }
 
-    protected EventStatus getStatus() {
-        List<OptionStatus> optionStatuses = this.options.stream()
-                .map(option -> new OptionStatus(option.name(), this.getOptionChance(option), Manager.getInstance().getOptionTotalShares(this.id, option.id())))
-                .toList();
+    protected Option getOptionByIndex(int index) throws GuessMarketException {
+        if (index < 0 || index >= this.options.size())
+            throw new GuessMarketException("Invalid option number: " + (index + 1) + ".");
 
-        List<TradeRecord> history = new ArrayList<>(Manager.getInstance().getPurchasesByEventId(this.id).stream()
-                .map(purchase -> new TradeRecord(purchase.option().name(), purchase.amount(), purchase.price()))
-                .toList());
-        Collections.reverse(history);
+        return this.options.get(index);
+    }
 
-        String winningOptionName = this.winningOption != null ? this.winningOption.name() : null;
+    protected Option getOtherOption(Option option) {
+        return this.options.get(0).id() == option.id() ? this.options.get(1) : this.options.get(0);
+    }
 
-        return new EventStatus(this.id, this.name, this.isActive, optionStatuses, this.accountBalance, this.totalFeeCollected, history, winningOptionName);
+    protected void validateMm(String requestingUsername) throws GuessMarketException {
+        User requester = Manager.getInstance().getUserByUsername(requestingUsername);
+
+        if (requester.blocked())
+            throw new GuessMarketException("User \"" + requestingUsername + "\" is blocked and cannot perform any actions.");
+
+        if (!requestingUsername.equals(this.mmUsername))
+            throw new GuessMarketException("Only \"" + this.mmUsername + "\" (the assigned market maker) can perform this action on event \"" + this.name + "\".");
     }
 }
