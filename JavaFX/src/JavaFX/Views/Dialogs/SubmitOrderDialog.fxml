@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          fx:controller="JavaFX.Views.Dialogs.SubmitOrderDialogController" hgap="8" vgap="8">
+    <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
+    <children>
+        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <MFXTextField fx:id="usernameField" prefWidth="220" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Option:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <MFXComboBox fx:id="optionChoice" prefWidth="220" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <Label text="Side:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <MFXComboBox fx:id="sideChoice" prefWidth="220" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+        <Label text="Quantity:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <Spinner fx:id="quantitySpinner" editable="true" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+        <Label text="Price per share:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <MFXTextField fx:id="priceField" promptText="e.g. 0.50" prefWidth="220" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+    </children>
+</GridPane>

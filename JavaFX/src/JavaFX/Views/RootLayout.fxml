@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="JavaFX.Views.RootLayoutController">
+    <top>
+        <VBox>
+            <children>
+                <HBox alignment="CENTER" styleClass="title-row">
+                    <padding><Insets top="4" right="0" bottom="6" left="0" /></padding>
+                    <children>
+                        <Label text="Guess Market" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+                    </children>
+                </HBox>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+                    <children>
+                        <MFXButton fx:id="loadButton" text="Load Events File..." onAction="#onLoadClicked" styleClass="bordered-button" />
+                        <Label fx:id="filePathLabel" text="(no file loaded)" HBox.hgrow="ALWAYS" />
+                        <MFXProgressBar fx:id="progressBar" progress="0" visible="false" managed="false" />
+                        <Label fx:id="progressLabel" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <StackPane>
+            <children>
+                <Label fx:id="placeholderLabel" text="Load an events file to get started." />
+                <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" visible="false" managed="false">
+                    <tabs>
+                        <Tab fx:id="eventsTab" text="Events">
+                            <content>
+                                <fx:include fx:id="eventsView" source="EventsView.fxml" />
+                            </content>
+                        </Tab>
+                        <Tab fx:id="usersTab" text="Users">
+                            <content>
+                                <fx:include fx:id="usersView" source="UsersView.fxml" />
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </children>
+        </StackPane>
+    </center>
+</BorderPane>

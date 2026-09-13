@@ -72,7 +72,15 @@ public class Main {
         consoleUtils.println("   Description: " + event.description());
         consoleUtils.println("   Fee: " + event.feePercent() + "% (" + feeCollectionLabel(event.feeCollection()) + ")");
         consoleUtils.println("   Options: " + String.join(", ", event.optionNames()));
-        consoleUtils.println("   Status: " + (event.phase() == EventPhase.ACTIVE ? "Active" : "Closed"));
+        consoleUtils.println("   Status: " + phaseLabel(event.phase()));
+    }
+
+    private static String phaseLabel(EventPhase phase) {
+        return switch (phase) {
+            case NOT_ACTIVE -> "Not active";
+            case ACTIVE -> "Active";
+            case CLOSED -> "Closed";
+        };
     }
 
     private static String feeCollectionLabel(FeeCollection feeCollection) {
@@ -121,8 +129,10 @@ public class Main {
         Integer amount = consoleUtils.readInt("How many shares would you like to buy? ");
         if (amount == null) return;
 
+        String username = consoleUtils.readLine("Enter your username: ");
+
         try {
-            PurchaseResult result = engine.buyShares(selected.id(), optionIndex, amount);
+            PurchaseResult result = engine.buyShares(selected.id(), optionIndex, amount, username);
             consoleUtils.println();
             consoleUtils.println("Purchase successful.");
             consoleUtils.println("   Shares cost: " + ConsoleUtils.formatDecimal(result.sharesCost()));
@@ -157,8 +167,10 @@ public class Main {
         Integer winningOptionIndex = consoleUtils.pickFromList(selected.optionNames(), "Choose an option by number (number from 1 to " +selected.optionNames().size() + "): ", "option");
         if (winningOptionIndex == null) return;
 
+        String username = consoleUtils.readLine("Enter your username (must be this event's market maker): ");
+
         try {
-            EventStatus finalStatus = engine.closeEvent(selected.id(), winningOptionIndex);
+            EventStatus finalStatus = engine.closeEvent(selected.id(), winningOptionIndex, username);
             consoleUtils.println();
             consoleUtils.println("The event has been closed.");
             printEventStatus(finalStatus);

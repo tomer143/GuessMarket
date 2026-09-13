@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="JavaFX.Views.EventsViewController" dividerPositions="0.48">
+    <items>
+        <VBox spacing="8">
+            <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+            <children>
+                <VBox fx:id="filtersContainer" spacing="6" />
+                <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="nameColumn" text="Name">
+                            <cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="statusColumn" text="Status">
+                            <cellValueFactory><PropertyValueFactory property="phase" /></cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="typeColumn" text="Type">
+                            <cellValueFactory><PropertyValueFactory property="method" /></cellValueFactory>
+                        </TableColumn>
+                        <TableColumn fx:id="feeColumn" text="Fee">
+                            <cellValueFactory><PropertyValueFactory property="feePercent" /></cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+        <VBox fx:id="detailContainer">
+            <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+            <children>
+                <Label text="Select an event to see its details." />
+            </children>
+        </VBox>
+    </items>
+</SplitPane>
