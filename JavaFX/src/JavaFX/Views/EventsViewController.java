@@ -34,6 +34,7 @@ public class EventsViewController {
     private final ObservableList<EventRow> rows = FXCollections.observableArrayList();
     private final FilteredList<EventRow> filteredRows = new FilteredList<>(rows);
     private GuessMarketEngine engine;
+    private Runnable onDataChanged;
     private EventDetailPane detailPane;
 
     @FXML
@@ -57,8 +58,9 @@ public class EventsViewController {
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showDetail(newValue));
     }
 
-    public void init(GuessMarketEngine engine) {
+    public void init(GuessMarketEngine engine, Runnable onDataChanged) {
         this.engine = engine;
+        this.onDataChanged = onDataChanged;
 
         FilterButtonGroup<TradingMethod, EventRow> typeFilter = new FilterButtonGroup<>("Type",
                 List.of(TradingMethod.LMSR, TradingMethod.ORDER_BOOK), Format::method, (option, row) -> row.method() == option);
@@ -91,7 +93,7 @@ public class EventsViewController {
             detailContainer.getChildren().setAll(new Label("Select an event to see its details."));
             return;
         }
-        detailPane = new EventDetailPane(engine, row.id(), null);
+        detailPane = new EventDetailPane(engine, row.id(), null, onDataChanged);
         VBox.setVgrow(detailPane, Priority.ALWAYS);
         detailContainer.getChildren().setAll(detailPane);
         Animations.fadeIn(detailPane, Duration.millis(250));

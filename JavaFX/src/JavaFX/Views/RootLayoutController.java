@@ -48,8 +48,13 @@ public class RootLayoutController {
     public void init(GuessMarketEngine engine, Stage primaryStage) {
         this.engine = engine;
         this.primaryStage = primaryStage;
-        eventsViewController.init(engine);
-        usersViewController.init(engine);
+        eventsViewController.init(engine, this::refreshAll);
+        usersViewController.init(engine, this::refreshAll);
+    }
+
+    private void refreshAll() {
+        eventsViewController.refresh();
+        usersViewController.refresh();
     }
 
     @FXML

@@ -29,7 +29,9 @@ public class UsersViewController {
 
     private final ObservableList<UserRow> rows = FXCollections.observableArrayList();
     private GuessMarketEngine engine;
+    private Runnable onDataChanged;
     private String selectedUsername;
+    private Integer selectedParticipationEventId;
 
     @FXML
     private void initialize() {
@@ -40,8 +42,9 @@ public class UsersViewController {
         });
     }
 
-    public void init(GuessMarketEngine engine) {
+    public void init(GuessMarketEngine engine, Runnable onDataChanged) {
         this.engine = engine;
+        this.onDataChanged = onDataChanged;
     }
 
     private void showUserDetail(String username) {
@@ -110,11 +113,17 @@ public class UsersViewController {
             eventDetailContainer.getChildren().add(new Label("Select an event above to see its details."));
 
             participationsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, participation) -> {
+                selectedParticipationEventId = participation == null ? null : participation.eventId();
                 if (participation == null) return;
-                EventDetailPane pane = new EventDetailPane(engine, participation.eventId(), username);
+                EventDetailPane pane = new EventDetailPane(engine, participation.eventId(), username, onDataChanged);
                 VBox.setVgrow(pane, Priority.ALWAYS);
                 eventDetailContainer.getChildren().setAll(pane);
             });
+
+            if (selectedParticipationEventId != null) {
+                participations.stream().filter(row -> row.eventId() == selectedParticipationEventId).findFirst()
+                        .ifPresent(row -> participationsTable.getSelectionModel().select(row));
+            }
 
             VBox content = new VBox(10, header, balanceChart, participationsTable, eventDetailContainer);
             VBox.setVgrow(content, Priority.ALWAYS);

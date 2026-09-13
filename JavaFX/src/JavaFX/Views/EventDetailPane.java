@@ -19,11 +19,13 @@ class EventDetailPane extends BorderPane {
     private final GuessMarketEngine engine;
     private final int eventId;
     private final String contextUsername;
+    private final Runnable onDataChanged;
 
-    public EventDetailPane(GuessMarketEngine engine, int eventId, String contextUsername) {
+    public EventDetailPane(GuessMarketEngine engine, int eventId, String contextUsername, Runnable onDataChanged) {
         this.engine = engine;
         this.eventId = eventId;
         this.contextUsername = contextUsername;
+        this.onDataChanged = onDataChanged;
         refresh();
     }
 
@@ -51,20 +53,20 @@ class EventDetailPane extends BorderPane {
         if (event.phase() == EventPhase.NOT_ACTIVE) {
             MFXButton openButton = new MFXButton("Open Event");
             openButton.getStyleClass().add("bordered-button");
-            openButton.setOnAction(e -> OpenEventDialog.show(engine, event, this::refresh));
+            openButton.setOnAction(e -> OpenEventDialog.show(engine, event, this::afterAction));
             actions.getChildren().add(openButton);
         } else if (event.phase() == EventPhase.ACTIVE) {
             MFXButton tradeButton = new MFXButton(event.method() == TradingMethod.LMSR ? "Buy Shares" : "Submit Order");
             tradeButton.getStyleClass().add("bordered-button");
             tradeButton.setOnAction(e -> {
                 if (event.method() == TradingMethod.LMSR)
-                    BuySharesDialog.show(engine, event, contextUsername, this::refresh);
+                    BuySharesDialog.show(engine, event, contextUsername, this::afterAction);
                 else
-                    SubmitOrderDialog.show(engine, event, contextUsername, this::refresh);
+                    SubmitOrderDialog.show(engine, event, contextUsername, this::afterAction);
             });
             MFXButton closeButton = new MFXButton("Close Event");
             closeButton.getStyleClass().add("bordered-button");
-            closeButton.setOnAction(e -> CloseEventDialog.show(engine, event, this::refresh));
+            closeButton.setOnAction(e -> CloseEventDialog.show(engine, event, this::afterAction));
             actions.getChildren().addAll(tradeButton, closeButton);
         }
 
@@ -81,5 +83,9 @@ class EventDetailPane extends BorderPane {
         } catch (GuessMarketException exception) {
             AlertUtils.showError("Could not load event status", exception.getMessage());
         }
+    }
+
+    private void afterAction() {
+        onDataChanged.run();
     }
 }
