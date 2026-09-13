@@ -2,6 +2,7 @@ package Engine;
 
 import Engine.External.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuessMarketEngine {
@@ -140,6 +141,17 @@ public class GuessMarketEngine {
             return !orderBookEvent.getHoldings(username).isEmpty();
 
         return false;
+    }
+
+    public List<BalanceHistoryPoint> getUserBalanceHistory(String username) throws GuessMarketException {
+        User user = Manager.getInstance().getUserByUsername(username);
+        List<Double> history = user.balanceHistory();
+
+        List<BalanceHistoryPoint> points = new ArrayList<>();
+        for (int i = 0; i < history.size(); i++)
+            points.add(new BalanceHistoryPoint(i, history.get(i)));
+
+        return points;
     }
 
     public void saveState(String path) throws GuessMarketException {

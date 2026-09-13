@@ -9,11 +9,22 @@ import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 class LmsrEventDetailPane {
     private static final Color LOW_COLOR = Color.web("#e53935");
@@ -37,6 +48,8 @@ class LmsrEventDetailPane {
             root.getChildren().addAll(line, chanceBar);
         }
 
+        root.getChildren().add(buildPriceChart(status));
+
         root.getChildren().add(new Label("Event account balance: " + Format.decimal(status.accountBalance())));
         root.getChildren().add(new Label("Total fee collected: " + Format.decimal(status.totalFeeCollected())));
 
@@ -59,6 +72,39 @@ class LmsrEventDetailPane {
         MFXScrollPane scrollPane = new MFXScrollPane(root);
         scrollPane.setFitToWidth(true);
         return scrollPane;
+    }
+
+    private static Node buildPriceChart(EventStatus status) {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Trade #");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Price per share");
+
+        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setTitle("Price history");
+        chart.setCreateSymbols(false);
+        chart.setAnimated(false);
+        chart.setPrefHeight(220);
+
+        List<TradeRecord> chronological = new ArrayList<>(status.history());
+        Collections.reverse(chronological);
+
+        Map<String, XYChart.Series<Number, Number>> seriesByOption = new LinkedHashMap<>();
+        Map<String, Integer> tradeCountByOption = new HashMap<>();
+        for (TradeRecord trade : chronological) {
+            XYChart.Series<Number, Number> series = seriesByOption.computeIfAbsent(trade.optionName(), name -> {
+                XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
+                newSeries.setName(name);
+                return newSeries;
+            });
+
+            int index = tradeCountByOption.merge(trade.optionName(), 1, Integer::sum) - 1;
+            double pricePerShare = trade.amount() == 0 ? 0 : trade.pricePaid() / trade.amount();
+            series.getData().add(new XYChart.Data<>(index, pricePerShare));
+        }
+        chart.getData().addAll(seriesByOption.values());
+
+        return chart;
     }
 
     private static void wireChanceColor(MFXProgressBar chanceBar) {

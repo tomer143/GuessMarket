@@ -11,6 +11,9 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
@@ -63,6 +66,8 @@ public class UsersViewController {
 
             VBox header = new VBox(4, title, balanceLabel);
 
+            LineChart<Number, Number> balanceChart = buildBalanceChart(engine.getUserBalanceHistory(username));
+
             ObservableList<ParticipationRow> participations = FXCollections.observableArrayList(
                     details.participations().stream().map(ParticipationRow::new).toList());
 
@@ -111,13 +116,34 @@ public class UsersViewController {
                 eventDetailContainer.getChildren().setAll(pane);
             });
 
-            VBox content = new VBox(10, header, participationsTable, eventDetailContainer);
+            VBox content = new VBox(10, header, balanceChart, participationsTable, eventDetailContainer);
             VBox.setVgrow(content, Priority.ALWAYS);
             detailContainer.getChildren().setAll(content);
             Animations.fadeIn(content, Duration.millis(250));
         } catch (GuessMarketException exception) {
             AlertUtils.showError("Could not load user details", exception.getMessage());
         }
+    }
+
+    private static LineChart<Number, Number> buildBalanceChart(List<BalanceHistoryPoint> history) {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Step");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Balance");
+
+        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setTitle("Account balance over time");
+        chart.setCreateSymbols(false);
+        chart.setAnimated(false);
+        chart.setLegendVisible(false);
+        chart.setPrefHeight(220);
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (BalanceHistoryPoint point : history)
+            series.getData().add(new XYChart.Data<>(point.step(), point.balance()));
+        chart.getData().add(series);
+
+        return chart;
     }
 
     public void refresh() {

@@ -7,11 +7,21 @@ import Engine.External.TradeHistoryRecord;
 import JavaFX.Format;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 class OrderBookEventDetailPane {
     public static Node build(OrderBookStatus status) {
@@ -22,6 +32,8 @@ class OrderBookEventDetailPane {
         for (OptionMarketData option : status.options())
             books.getChildren().add(buildOptionBookPanel(option));
         root.getChildren().add(books);
+
+        root.getChildren().add(buildPriceChart(status));
 
         Label participantsTitle = new Label("Trade history (most recent first):");
         participantsTitle.setStyle("-fx-font-weight: bold;");
@@ -48,6 +60,38 @@ class OrderBookEventDetailPane {
         MFXScrollPane scrollPane = new MFXScrollPane(root);
         scrollPane.setFitToWidth(true);
         return scrollPane;
+    }
+
+    private static Node buildPriceChart(OrderBookStatus status) {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Trade #");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Price per share");
+
+        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setTitle("Price history");
+        chart.setCreateSymbols(false);
+        chart.setAnimated(false);
+        chart.setPrefHeight(220);
+
+        List<TradeHistoryRecord> chronological = new ArrayList<>(status.history());
+        Collections.reverse(chronological);
+
+        Map<String, XYChart.Series<Number, Number>> seriesByOption = new LinkedHashMap<>();
+        Map<String, Integer> tradeCountByOption = new HashMap<>();
+        for (TradeHistoryRecord trade : chronological) {
+            XYChart.Series<Number, Number> series = seriesByOption.computeIfAbsent(trade.optionName(), name -> {
+                XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
+                newSeries.setName(name);
+                return newSeries;
+            });
+
+            int index = tradeCountByOption.merge(trade.optionName(), 1, Integer::sum) - 1;
+            series.getData().add(new XYChart.Data<>(index, trade.price()));
+        }
+        chart.getData().addAll(seriesByOption.values());
+
+        return chart;
     }
 
     private static Node buildOptionBookPanel(OptionMarketData option) {
