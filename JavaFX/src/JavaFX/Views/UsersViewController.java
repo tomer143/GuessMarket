@@ -2,6 +2,7 @@ package JavaFX.Views;
 
 import Engine.External.*;
 import Engine.GuessMarketEngine;
+import JavaFX.Animations;
 import JavaFX.Format;
 import JavaFX.Models.ParticipationRow;
 import JavaFX.Models.UserRow;
@@ -15,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.util.List;
 
@@ -112,6 +114,7 @@ public class UsersViewController {
             VBox content = new VBox(10, header, participationsTable, eventDetailContainer);
             VBox.setVgrow(content, Priority.ALWAYS);
             detailContainer.getChildren().setAll(content);
+            Animations.fadeIn(content, Duration.millis(250));
         } catch (GuessMarketException exception) {
             AlertUtils.showError("Could not load user details", exception.getMessage());
         }

@@ -2,6 +2,7 @@
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -28,6 +29,7 @@
                         <Label fx:id="filePathLabel" text="(no file loaded)" HBox.hgrow="ALWAYS" />
                         <MFXProgressBar fx:id="progressBar" progress="0" visible="false" managed="false" />
                         <Label fx:id="progressLabel" />
+                        <MFXToggleButton fx:id="animationsToggle" text="Animations" selected="true" />
                     </children>
                 </HBox>
             </children>

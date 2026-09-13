@@ -1,16 +1,19 @@
 package JavaFX.Views;
 
 import Engine.GuessMarketEngine;
+import JavaFX.Animations;
 import JavaFX.Tasks.LoadEventsFileTask;
 import JavaFX.Views.Dialogs.AlertUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 
@@ -19,6 +22,7 @@ public class RootLayoutController {
     @FXML private Label filePathLabel;
     @FXML private MFXProgressBar progressBar;
     @FXML private Label progressLabel;
+    @FXML private MFXToggleButton animationsToggle;
     @FXML private Label placeholderLabel;
     @FXML private TabPane tabPane;
     @FXML private Tab eventsTab;
@@ -33,9 +37,11 @@ public class RootLayoutController {
     @FXML
     private void initialize() {
         showPlaceholder(true);
+        animationsToggle.selectedProperty().bindBidirectional(Animations.enabledProperty());
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab == eventsTab) eventsViewController.refresh();
             else if (newTab == usersTab) usersViewController.refresh();
+            if (newTab != null) Animations.fadeIn(newTab.getContent(), Duration.millis(200));
         });
     }
 
@@ -66,6 +72,7 @@ public class RootLayoutController {
             loadButton.setDisable(false);
             filePathLabel.setText(file.getAbsolutePath());
             showPlaceholder(false);
+            Animations.fadeIn(tabPane, Duration.millis(400));
             eventsViewController.refresh();
             usersViewController.refresh();
         });

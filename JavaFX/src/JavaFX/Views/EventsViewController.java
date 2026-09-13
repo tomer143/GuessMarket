@@ -5,6 +5,7 @@ import Engine.External.EventPhase;
 import Engine.External.FeeCollection;
 import Engine.External.TradingMethod;
 import Engine.GuessMarketEngine;
+import JavaFX.Animations;
 import JavaFX.Format;
 import JavaFX.Models.EventRow;
 import JavaFX.Views.Components.FilterButtonGroup;
@@ -18,6 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 import java.util.List;
 
@@ -92,6 +94,7 @@ public class EventsViewController {
         detailPane = new EventDetailPane(engine, row.id(), null);
         VBox.setVgrow(detailPane, Priority.ALWAYS);
         detailContainer.getChildren().setAll(detailPane);
+        Animations.fadeIn(detailPane, Duration.millis(250));
     }
 
     public void refresh() {
