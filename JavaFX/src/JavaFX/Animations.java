@@ -12,7 +12,7 @@ import javafx.scene.Node;
 import javafx.util.Duration;
 
 public class Animations {
-    private static final BooleanProperty enabled = new SimpleBooleanProperty(true);
+    private static final BooleanProperty enabled = new SimpleBooleanProperty(false);
 
     public static BooleanProperty enabledProperty() {
         return enabled;
