@@ -25,6 +25,8 @@ public class OpenEventDialog {
             throw new UncheckedIOException(exception);
         }
 
+        DialogStyling.applyTheme(dialog.getDialogPane());
+
         OpenEventDialogController controller = loader.getController();
         controller.setDefaultUsername(event.mmUsername());
 

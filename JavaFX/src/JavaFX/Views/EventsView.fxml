@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,6 +17,11 @@
         <VBox spacing="8">
             <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
             <children>
+                <HBox>
+                    <children>
+                        <MFXButton fx:id="createEventButton" text="Create Event" styleClass="bordered-button" />
+                    </children>
+                </HBox>
                 <VBox fx:id="filtersContainer" spacing="6" />
                 <TableView fx:id="table" VBox.vgrow="ALWAYS">
                     <columns>

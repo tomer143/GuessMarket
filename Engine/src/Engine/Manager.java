@@ -64,6 +64,10 @@ class Manager implements Serializable {
         return ++nextTradeId;
     }
 
+    public void addEvent(Event event) {
+        this.events.add(event);
+    }
+
     public void addPurchase(Purchase purchase) {
         this.purchases.add(purchase);
     }

@@ -27,6 +27,8 @@ public class BuySharesDialog {
             throw new UncheckedIOException(exception);
         }
 
+        DialogStyling.applyTheme(dialog.getDialogPane());
+
         BuySharesDialogController controller = loader.getController();
         controller.init(defaultUsername == null ? "" : defaultUsername, event.optionNames());
 

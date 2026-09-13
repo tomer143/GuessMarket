@@ -23,6 +23,76 @@ public class GuessMarketEngine {
         Manager.getInstance().getEventById(eventId).open(username);
     }
 
+    public int createLmsrEvent(String name, String description, int feePercent, FeeCollection feeCollection,
+                                String optionAName, String optionBName, int liquidityB, String creatorUsername) throws GuessMarketException {
+        if (liquidityB <= 0)
+            throw new GuessMarketException("The liquidity parameter (b) must be a positive number.");
+
+        LmsrEvent event = new LmsrEvent();
+        event.instability = liquidityB;
+
+        return createEvent(event, name, description, feePercent, feeCollection, optionAName, optionBName, creatorUsername);
+    }
+
+    public int createOrderBookEvent(String name, String description, int feePercent, FeeCollection feeCollection,
+                                     String optionAName, String optionBName, int baseValue, int initialAmount, boolean allowMint,
+                                     String creatorUsername) throws GuessMarketException {
+        if (baseValue <= 0)
+            throw new GuessMarketException("The base value (d) must be a positive number.");
+        if (initialAmount < 0)
+            throw new GuessMarketException("The initial amount cannot be negative.");
+
+        OrderBookEvent event = new OrderBookEvent();
+        event.baseValue = baseValue;
+        event.initialAmount = initialAmount;
+        event.allowMint = allowMint;
+        event.books = new ArrayList<>();
+        event.holdings = new ArrayList<>();
+        event.trades = new ArrayList<>();
+
+        int eventId = createEvent(event, name, description, feePercent, feeCollection, optionAName, optionBName, creatorUsername);
+
+        for (Option option : event.options)
+            event.books.add(new OrderBook(option.id()));
+
+        return eventId;
+    }
+
+    private int createEvent(Event event, String name, String description, int feePercent, FeeCollection feeCollection,
+                             String optionAName, String optionBName, String creatorUsername) throws GuessMarketException {
+        if (name == null || name.isBlank())
+            throw new GuessMarketException("The event name cannot be blank.");
+        if (description == null || description.isBlank())
+            throw new GuessMarketException("The event description cannot be blank.");
+        if (feePercent < 0 || feePercent > 90)
+            throw new GuessMarketException("The fee must be between 0 and 90 percent.");
+        if (feeCollection == null)
+            throw new GuessMarketException("A fee collection method must be specified.");
+        if (optionAName == null || optionAName.isBlank() || optionBName == null || optionBName.isBlank())
+            throw new GuessMarketException("Both option names must be provided.");
+        if (optionAName.trim().equalsIgnoreCase(optionBName.trim()))
+            throw new GuessMarketException("The two options must have different names.");
+
+        User creator = Manager.getInstance().getUserByUsername(creatorUsername);
+        if (creator.blocked())
+            throw new GuessMarketException("User \"" + creatorUsername + "\" is blocked and cannot perform any actions.");
+
+        int newId = Manager.getInstance().getEvents().stream().mapToInt(existing -> existing.id).max().orElse(0) + 1;
+
+        event.id = newId;
+        event.name = name.trim();
+        event.description = description.trim();
+        event.feePercent = feePercent;
+        event.feeCollection = feeCollection;
+        event.options = List.of(new Option(1, optionAName.trim()), new Option(2, optionBName.trim()));
+        event.phase = EventPhase.NOT_ACTIVE;
+        event.mmUsername = creatorUsername;
+
+        Manager.getInstance().addEvent(event);
+
+        return newId;
+    }
+
     public EventStatus getEventStatus(int eventId) throws GuessMarketException {
         Event event = Manager.getInstance().getEventById(eventId);
 

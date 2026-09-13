@@ -26,6 +26,8 @@ public class CloseEventDialog {
             throw new UncheckedIOException(exception);
         }
 
+        DialogStyling.applyTheme(dialog.getDialogPane());
+
         CloseEventDialogController controller = loader.getController();
         controller.init(event.mmUsername(), event.optionNames());
 

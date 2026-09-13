@@ -26,6 +26,8 @@ public class SubmitOrderDialog {
             throw new UncheckedIOException(exception);
         }
 
+        DialogStyling.applyTheme(dialog.getDialogPane());
+
         SubmitOrderDialogController controller = loader.getController();
         controller.init(defaultUsername == null ? "" : defaultUsername, event.optionNames());
 

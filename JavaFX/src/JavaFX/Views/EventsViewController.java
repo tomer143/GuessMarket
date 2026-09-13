@@ -9,6 +9,8 @@ import JavaFX.Animations;
 import JavaFX.Format;
 import JavaFX.Models.EventRow;
 import JavaFX.Views.Components.FilterButtonGroup;
+import JavaFX.Views.Dialogs.CreateEventDialog;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,6 +26,7 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class EventsViewController {
+    @FXML private MFXButton createEventButton;
     @FXML private VBox filtersContainer;
     @FXML private TableView<EventRow> table;
     @FXML private TableColumn<EventRow, EventPhase> statusColumn;
@@ -61,6 +64,8 @@ public class EventsViewController {
     public void init(GuessMarketEngine engine, Runnable onDataChanged) {
         this.engine = engine;
         this.onDataChanged = onDataChanged;
+
+        createEventButton.setOnAction(event -> CreateEventDialog.show(engine, onDataChanged));
 
         FilterButtonGroup<TradingMethod, EventRow> typeFilter = new FilterButtonGroup<>("Type",
                 List.of(TradingMethod.LMSR, TradingMethod.ORDER_BOOK), Format::method, (option, row) -> row.method() == option);

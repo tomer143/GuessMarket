@@ -29,7 +29,7 @@
                         <Label fx:id="filePathLabel" text="(no file loaded)" HBox.hgrow="ALWAYS" />
                         <MFXProgressBar fx:id="progressBar" progress="0" visible="false" managed="false" />
                         <Label fx:id="progressLabel" />
-                        <MFXToggleButton fx:id="animationsToggle" text="Animations" selected="true" />
+                        <MFXToggleButton fx:id="animationsToggle" text="Animations" selected="false" />
                     </children>
                 </HBox>
             </children>
