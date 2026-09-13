@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -29,11 +30,15 @@
                 </TableView>
             </children>
         </VBox>
-        <VBox fx:id="detailContainer">
-            <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
-            <children>
-                <Label text="Select a user to see their details." />
-            </children>
-        </VBox>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox fx:id="detailContainer">
+                    <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+                    <children>
+                        <Label text="Select a user to see their details." />
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
     </items>
 </SplitPane>
