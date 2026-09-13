@@ -1,6 +1,8 @@
 package JavaFX.Views;
 
+import Engine.External.HoldingSummary;
 import Engine.External.OptionMarketData;
+import Engine.External.OrderBookParticipation;
 import Engine.External.OrderBookStatus;
 import Engine.External.RestingOrderView;
 import Engine.External.TradeHistoryRecord;
@@ -56,6 +58,32 @@ class OrderBookEventDetailPane {
 
         if (status.winningOptionName() != null)
             root.getChildren().add(new Label("Winning option: " + status.winningOptionName()));
+
+        MFXScrollPane scrollPane = new MFXScrollPane(root);
+        scrollPane.setFitToWidth(true);
+        return scrollPane;
+    }
+
+    public static Node buildParticipation(OrderBookParticipation participation) {
+        VBox root = new VBox(10);
+        root.setPadding(new Insets(10));
+
+        Label holdingsTitle = new Label("Your holdings:");
+        holdingsTitle.setStyle("-fx-font-weight: bold;");
+        root.getChildren().add(holdingsTitle);
+
+        if (participation.holdings().isEmpty()) {
+            root.getChildren().add(new Label("(no holdings)"));
+        } else {
+            for (HoldingSummary holding : participation.holdings())
+                root.getChildren().add(new Label(holding.optionName() + ":  quantity " + holding.quantity()
+                        + "   |   amount paid " + Format.decimal(holding.amountPaid())));
+        }
+
+        root.getChildren().add(new Label("Total fee paid: " + Format.decimal(participation.totalFeePaid())));
+
+        if (participation.profitLoss() != null)
+            root.getChildren().add(new Label("Profit/Loss: " + Format.decimal(participation.profitLoss())));
 
         MFXScrollPane scrollPane = new MFXScrollPane(root);
         scrollPane.setFitToWidth(true);

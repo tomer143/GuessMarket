@@ -74,11 +74,21 @@ class EventDetailPane extends BorderPane {
 
         try {
             if (event.method() == TradingMethod.LMSR) {
-                EventStatus status = engine.getEventStatus(event.id());
-                setCenter(LmsrEventDetailPane.build(status));
+                if (contextUsername != null) {
+                    LmsrParticipation participation = engine.getUserLmsrParticipation(event.id(), contextUsername);
+                    setCenter(LmsrEventDetailPane.buildParticipation(participation));
+                } else {
+                    EventStatus status = engine.getEventStatus(event.id());
+                    setCenter(LmsrEventDetailPane.build(status));
+                }
             } else {
-                OrderBookStatus status = engine.getOrderBookStatus(event.id());
-                setCenter(OrderBookEventDetailPane.build(status));
+                if (contextUsername != null) {
+                    OrderBookParticipation participation = engine.getUserOrderBookParticipation(event.id(), contextUsername);
+                    setCenter(OrderBookEventDetailPane.buildParticipation(participation));
+                } else {
+                    OrderBookStatus status = engine.getOrderBookStatus(event.id());
+                    setCenter(OrderBookEventDetailPane.build(status));
+                }
             }
         } catch (GuessMarketException exception) {
             AlertUtils.showError("Could not load event status", exception.getMessage());

@@ -203,12 +203,12 @@ public class GuessMarketEngine {
     }
 
     private boolean isParticipant(Event event, String username) {
-        if (username.equals(event.mmUsername))
-            return true;
+        boolean mmHasActed = username.equals(event.mmUsername) && event.phase != EventPhase.NOT_ACTIVE;
+
         if (event instanceof LmsrEvent)
-            return Manager.getInstance().getPurchasesByEventId(event.id).stream().anyMatch(purchase -> purchase.username().equals(username));
+            return mmHasActed || Manager.getInstance().getPurchasesByEventId(event.id).stream().anyMatch(purchase -> purchase.username().equals(username));
         if (event instanceof OrderBookEvent orderBookEvent)
-            return !orderBookEvent.getHoldings(username).isEmpty();
+            return mmHasActed || orderBookEvent.getParticipants().stream().anyMatch(participant -> participant.username().equals(username));
 
         return false;
     }

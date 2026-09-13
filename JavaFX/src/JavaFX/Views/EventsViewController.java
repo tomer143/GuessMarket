@@ -32,6 +32,7 @@ public class EventsViewController {
     @FXML private TableColumn<EventRow, EventPhase> statusColumn;
     @FXML private TableColumn<EventRow, TradingMethod> typeColumn;
     @FXML private TableColumn<EventRow, Number> feeColumn;
+    @FXML private TableColumn<EventRow, Number> accountBalanceColumn;
     @FXML private VBox detailContainer;
 
     private final ObservableList<EventRow> rows = FXCollections.observableArrayList();
@@ -56,6 +57,7 @@ public class EventsViewController {
                 setText(item + "% (" + Format.feeCollection(row.feeCollection()) + ")");
             }
         });
+        accountBalanceColumn.setCellFactory(formattedCell(number -> Format.decimal(number.doubleValue())));
 
         table.setItems(filteredRows);
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showDetail(newValue));

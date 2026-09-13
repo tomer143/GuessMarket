@@ -1,6 +1,7 @@
 package JavaFX.Views;
 
 import Engine.External.EventStatus;
+import Engine.External.LmsrParticipation;
 import Engine.External.OptionStatus;
 import Engine.External.TradeRecord;
 import JavaFX.Animations;
@@ -63,6 +64,37 @@ class LmsrEventDetailPane {
             root.getChildren().add(new Label("(no trades yet)"));
         } else {
             for (TradeRecord trade : status.history()) {
+                root.getChildren().add(new Label("Bought " + trade.amount() + " share(s) of \"" + trade.optionName()
+                        + "\" for " + Format.decimal(trade.pricePaid())));
+            }
+        }
+
+        MFXScrollPane scrollPane = new MFXScrollPane(root);
+        scrollPane.setFitToWidth(true);
+        return scrollPane;
+    }
+
+    public static Node buildParticipation(LmsrParticipation participation) {
+        VBox root = new VBox(10);
+        root.setPadding(new Insets(10));
+
+        for (OptionStatus optionStatus : participation.optionStatuses())
+            root.getChildren().add(new Label(optionStatus.name() + ":  chance " + Format.decimal(optionStatus.chance())
+                    + "   |   total shares bought " + optionStatus.totalSharesBought()));
+
+        root.getChildren().add(new Label("Total fee paid: " + Format.decimal(participation.totalFeePaid())));
+
+        if (participation.winningOptionName() != null)
+            root.getChildren().add(new Label("Winning option: " + participation.winningOptionName()));
+
+        Label historyTitle = new Label("Your trade history (most recent first):");
+        historyTitle.setStyle("-fx-font-weight: bold;");
+        root.getChildren().add(historyTitle);
+
+        if (participation.history().isEmpty()) {
+            root.getChildren().add(new Label("(no trades yet)"));
+        } else {
+            for (TradeRecord trade : participation.history()) {
                 root.getChildren().add(new Label("Bought " + trade.amount() + " share(s) of \"" + trade.optionName()
                         + "\" for " + Format.decimal(trade.pricePaid())));
             }

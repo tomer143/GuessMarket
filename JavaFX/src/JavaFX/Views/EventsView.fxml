@@ -37,6 +37,9 @@
                         <TableColumn fx:id="feeColumn" text="Fee">
                             <cellValueFactory><PropertyValueFactory property="feePercent" /></cellValueFactory>
                         </TableColumn>
+                        <TableColumn fx:id="accountBalanceColumn" text="Account Balance">
+                            <cellValueFactory><PropertyValueFactory property="accountBalance" /></cellValueFactory>
+                        </TableColumn>
                     </columns>
                 </TableView>
             </children>
