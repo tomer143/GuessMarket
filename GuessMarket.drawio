@@ -1,108 +1,426 @@
 <mxfile host="Electron">
-  <diagram name="‫עמוד-1‬" id="xFo-CqHD2N_a6iJfTpj_">
-    <mxGraphModel dx="978" dy="572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <diagram name="Engine Architecture" id="xFo-CqHD2N_a6iJfTpj_">
+    <mxGraphModel dx="1174" dy="686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-17" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="abstract Event" vertex="1">
-          <mxGeometry height="260" width="250" x="250" y="72" as="geometry" />
+
+        <!-- ================= Title ================= -->
+        <mxCell id="title" parent="1" vertex="1" value="Guess Market &#8212; Engine Architecture after Exercise 1 changes" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;">
+          <mxGeometry x="20" y="-50" width="820" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-18" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id: int" vertex="1">
-          <mxGeometry height="26" width="250" y="26" as="geometry" />
+
+        <!-- ================= Background layers (drawn first = behind) ================= -->
+        <mxCell id="bgEngine" parent="1" vertex="1" value="Engine (package-private) &#8212; invisible outside this module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;verticalAlign=top;align=left;fontSize=16;fontStyle=1;fontColor=#666666;spacingLeft=10;spacingTop=6;">
+          <mxGeometry x="0" y="0" width="1560" height="920" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-62" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="mmId: int" vertex="1">
-          <mxGeometry height="26" width="250" y="52" as="geometry" />
+        <mxCell id="bgExternal" parent="1" vertex="1" value="Engine.External (public) &#8212; the only boundary UI is allowed to see" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;fontSize=16;fontStyle=1;fontColor=#9673a6;spacingLeft=10;spacingTop=6;">
+          <mxGeometry x="0" y="950" width="2280" height="280" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-19" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="name: string" vertex="1">
-          <mxGeometry height="26" width="250" y="78" as="geometry" />
+        <mxCell id="bgUI" parent="1" vertex="1" value="UI module &#8212; owns main(), System.out, Scanner" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;verticalAlign=top;align=left;fontSize=16;fontStyle=1;fontColor=#666666;spacingLeft=10;spacingTop=6;">
+          <mxGeometry x="850" y="1270" width="380" height="230" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-20" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="description: string" vertex="1">
-          <mxGeometry height="26" width="250" y="104" as="geometry" />
+
+        <!-- ================= Purchase ================= -->
+        <mxCell id="purchase" parent="1" vertex="1" value="Purchase" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="20" y="380" width="180" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-22" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="feePercentage (???): float" vertex="1">
-          <mxGeometry height="26" width="250" y="130" as="geometry" />
+        <mxCell id="purchase_eventid" parent="purchase" vertex="1" value="eventId: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="180" height="26" y="26" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-51" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="feeMethod: enum(LMSR / OB)" vertex="1">
-          <mxGeometry height="26" width="250" y="156" as="geometry" />
+        <mxCell id="purchase_amount" parent="purchase" vertex="1" value="amount: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="180" height="26" y="52" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-23" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="feeCollection: enum(on purchase / on close)" vertex="1">
-          <mxGeometry height="26" width="250" y="182" as="geometry" />
+        <mxCell id="purchase_price" parent="purchase" vertex="1" value="price: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="180" height="26" y="78" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-26" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="options: int[]" vertex="1">
-          <mxGeometry height="26" width="250" y="208" as="geometry" />
+        <mxCell id="purchase_option" parent="purchase" vertex="1" value="option: Option" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="180" height="26" y="104" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-25" parent="TaVf_i9mVDtYa4NC2Mjz-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="isActive: boolean" vertex="1">
-          <mxGeometry height="26" width="250" y="234" as="geometry" />
+
+        <!-- ================= Option ================= -->
+        <mxCell id="option" parent="1" vertex="1" value="Option" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="240" y="380" width="160" height="78" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-28" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="MoneyMaker" vertex="1">
-          <mxGeometry height="78" width="140" x="620" y="190" as="geometry" />
+        <mxCell id="option_id" parent="option" vertex="1" value="id: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="160" height="26" y="26" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-29" parent="TaVf_i9mVDtYa4NC2Mjz-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id: int" vertex="1">
-          <mxGeometry height="26" width="140" y="26" as="geometry" />
+        <mxCell id="option_name" parent="option" vertex="1" value="name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="160" height="26" y="52" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-61" parent="TaVf_i9mVDtYa4NC2Mjz-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="balance: float" vertex="1">
-          <mxGeometry height="26" width="140" y="52" as="geometry" />
+
+        <!-- ================= MoneyMaker ================= -->
+        <mxCell id="moneymaker" parent="1" vertex="1" value="MoneyMaker" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="240" y="520" width="160" height="78" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-33" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Purchase" vertex="1">
-          <mxGeometry height="156" width="140" x="40" y="72" as="geometry" />
+        <mxCell id="mm_id" parent="moneymaker" vertex="1" value="id: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="160" height="26" y="26" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-34" parent="TaVf_i9mVDtYa4NC2Mjz-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id (???): int" vertex="1">
-          <mxGeometry height="26" width="140" y="26" as="geometry" />
+        <mxCell id="mm_balance" parent="moneymaker" vertex="1" value="balance: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;">
+          <mxGeometry width="160" height="26" y="52" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-35" parent="TaVf_i9mVDtYa4NC2Mjz-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="eventId: int" vertex="1">
-          <mxGeometry height="26" width="140" y="52" as="geometry" />
+
+        <!-- ================= Event (abstract) ================= -->
+        <mxCell id="event" parent="1" vertex="1" value="Event  &#171;abstract&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="460" y="40" width="320" height="502" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-36" parent="TaVf_i9mVDtYa4NC2Mjz-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="amount: int" vertex="1">
-          <mxGeometry height="26" width="140" y="78" as="geometry" />
+        <mxCell id="event_id" parent="event" vertex="1" value="id: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="26" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-40" parent="TaVf_i9mVDtYa4NC2Mjz-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="price: float" vertex="1">
-          <mxGeometry height="26" width="140" y="104" as="geometry" />
+        <mxCell id="event_mmid" parent="event" vertex="1" value="mmId: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="52" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-47" parent="TaVf_i9mVDtYa4NC2Mjz-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="option: int" vertex="1">
-          <mxGeometry height="26" width="140" y="130" as="geometry" />
+        <mxCell id="event_name" parent="event" vertex="1" value="name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="78" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-39" edge="1" parent="1" source="TaVf_i9mVDtYa4NC2Mjz-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="TaVf_i9mVDtYa4NC2Mjz-18">
+        <mxCell id="event_desc" parent="event" vertex="1" value="description: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="event_fee" parent="event" vertex="1" value="feePercent: int  [0..90]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="event_feecoll" parent="event" vertex="1" value="feeCollection: FeeCollection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="event_options" parent="event" vertex="1" value="options: Option[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="event_active" parent="event" vertex="1" value="isActive: boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="event_balance" parent="event" vertex="1" value="accountBalance: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="234" as="geometry" />
+        </mxCell>
+        <mxCell id="event_totalfee" parent="event" vertex="1" value="totalFeeCollected: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="event_winner" parent="event" vertex="1" value="winningOption: Option  (null until closed)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="286" as="geometry" />
+        </mxCell>
+        <mxCell id="event_divider" parent="event" vertex="1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;">
+          <mxGeometry width="320" height="8" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m1" parent="event" vertex="1" value="abstract getFeeMethod(): FeeMethod" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;">
+          <mxGeometry width="320" height="26" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m2" parent="event" vertex="1" value="abstract getPrice(option, amount): double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;">
+          <mxGeometry width="320" height="26" y="346" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m3" parent="event" vertex="1" value="abstract getOptionChance(option): double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;">
+          <mxGeometry width="320" height="26" y="372" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m4" parent="event" vertex="1" value="abstract buy(optionIndex, amount): PurchaseResult" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;">
+          <mxGeometry width="320" height="26" y="398" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m5" parent="event" vertex="1" value="abstract close(winningOptionIndex): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;">
+          <mxGeometry width="320" height="26" y="424" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m6" parent="event" vertex="1" value="toDetails(): EventDetails" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="event_m7" parent="event" vertex="1" value="buildStatus(): EventTradingStatus" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="476" as="geometry" />
+        </mxCell>
+
+        <!-- ================= LmsrEvent ================= -->
+        <mxCell id="lmsrevent" parent="1" vertex="1" value="LmsrEvent" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="840" y="40" width="280" height="216" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_instability" parent="lmsrevent" vertex="1" value="instability (b): double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_divider" parent="lmsrevent" vertex="1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;">
+          <mxGeometry width="280" height="8" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m1" parent="lmsrevent" vertex="1" value="getFeeMethod() &#8594; FeeMethod.LMSR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m2" parent="lmsrevent" vertex="1" value="getPrice(): double  (LMSR cost fn)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="86" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m3" parent="lmsrevent" vertex="1" value="getOptionChance(): double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="112" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m4" parent="lmsrevent" vertex="1" value="initialSubsidy(): double  (= b &#215; ln 2)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m5" parent="lmsrevent" vertex="1" value="buy(optionIndex, amount)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="lmsr_m6" parent="lmsrevent" vertex="1" value="close(winningOptionIndex)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="190" as="geometry" />
+        </mxCell>
+
+        <!-- ================= Manager ================= -->
+        <mxCell id="manager" parent="1" vertex="1" value="Manager  &#171;singleton&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="460" y="600" width="320" height="294" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_events" parent="manager" vertex="1" value="events: List&lt;Event&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_purchases" parent="manager" vertex="1" value="purchases: List&lt;Purchase&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_mm" parent="manager" vertex="1" value="moneyMaker: MoneyMaker" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_divider" parent="manager" vertex="1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;">
+          <mxGeometry width="320" height="8" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m1" parent="manager" vertex="1" value="getInstance(): Manager" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="112" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m2" parent="manager" vertex="1" value="getEvents() / getActiveEvents()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m3" parent="manager" vertex="1" value="getEventById(id): Event" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m4" parent="manager" vertex="1" value="getTotalSharesForOption(eventId, optionId): int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m5" parent="manager" vertex="1" value="getPurchasesByEventId(eventId): List&lt;Purchase&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m6" parent="manager" vertex="1" value="addPurchase(purchase): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="242" as="geometry" />
+        </mxCell>
+        <mxCell id="manager_m7" parent="manager" vertex="1" value="replaceState(events, moneyMaker): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="268" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EventFileLoader ================= -->
+        <mxCell id="loader" parent="1" vertex="1" value="EventFileLoader  &#171;static&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="840" y="600" width="280" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="loader_m1" parent="loader" vertex="1" value="load(path): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- ================= GuessMarketEngine (the one public class in Engine) ================= -->
+        <mxCell id="facade" parent="1" vertex="1" value="GuessMarketEngine  &#171;public facade&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#ffe6cc;strokeColor=#d79b00;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="1180" y="600" width="340" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m1" parent="facade" vertex="1" value="loadEventsFile(path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m2" parent="facade" vertex="1" value="getAllEvents(): List&lt;EventDetails&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m3" parent="facade" vertex="1" value="getActiveEvents(): List&lt;EventDetails&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m4" parent="facade" vertex="1" value="getEventStatus(eventId): EventTradingStatus" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m5" parent="facade" vertex="1" value="buyShares(eventId, optionIndex, amount): PurchaseResult" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_m6" parent="facade" vertex="1" value="closeEvent(eventId, winningOptionIndex): EventTradingStatus" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="340" height="26" y="156" as="geometry" />
+        </mxCell>
+
+        <!-- ================= FeeMethod (enum) ================= -->
+        <mxCell id="feemethod" parent="1" vertex="1" value="FeeMethod  &#171;enum&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="20" y="980" width="160" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="fm1" parent="feemethod" vertex="1" value="LMSR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="160" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fm2" parent="feemethod" vertex="1" value="OP" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="160" height="26" y="52" as="geometry" />
+        </mxCell>
+
+        <!-- ================= FeeCollection (enum) ================= -->
+        <mxCell id="feecollection" parent="1" vertex="1" value="FeeCollection  &#171;enum&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="220" y="980" width="200" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="fc1" parent="feecollection" vertex="1" value="OnPurchase" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="200" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fc2" parent="feecollection" vertex="1" value="OnClose" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="200" height="26" y="52" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EventDetails (record) ================= -->
+        <mxCell id="eventdetails" parent="1" vertex="1" value="EventDetails  &#171;record&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="460" y="980" width="300" height="208" as="geometry" />
+        </mxCell>
+        <mxCell id="ed1" parent="eventdetails" vertex="1" value="id: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ed2" parent="eventdetails" vertex="1" value="name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="ed3" parent="eventdetails" vertex="1" value="description: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="ed4" parent="eventdetails" vertex="1" value="feePercent: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="ed5" parent="eventdetails" vertex="1" value="feeCollection: FeeCollection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ed6" parent="eventdetails" vertex="1" value="optionNames: List&lt;String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="ed7" parent="eventdetails" vertex="1" value="isActive: boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="300" height="26" y="182" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EventTradingStatus (record) ================= -->
+        <mxCell id="eventstatus" parent="1" vertex="1" value="EventTradingStatus  &#171;record&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="800" y="980" width="320" height="234" as="geometry" />
+        </mxCell>
+        <mxCell id="es1" parent="eventstatus" vertex="1" value="eventId: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="es2" parent="eventstatus" vertex="1" value="eventName: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="es3" parent="eventstatus" vertex="1" value="isActive: boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="es4" parent="eventstatus" vertex="1" value="optionStatuses: List&lt;OptionStatus&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="es5" parent="eventstatus" vertex="1" value="accountBalance: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="es6" parent="eventstatus" vertex="1" value="totalFeeCollected: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="es7" parent="eventstatus" vertex="1" value="history: List&lt;TradeRecord&gt;  (newest first)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="es8" parent="eventstatus" vertex="1" value="winningOptionName: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="320" height="26" y="208" as="geometry" />
+        </mxCell>
+
+        <!-- ================= OptionStatus (record) ================= -->
+        <mxCell id="optionstatus" parent="1" vertex="1" value="OptionStatus  &#171;record&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="1160" y="980" width="240" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="os1" parent="optionstatus" vertex="1" value="name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="os2" parent="optionstatus" vertex="1" value="chance: double  [0..1]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="os3" parent="optionstatus" vertex="1" value="totalSharesBought: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="78" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TradeRecord (record) ================= -->
+        <mxCell id="traderecord" parent="1" vertex="1" value="TradeRecord  &#171;record&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="1440" y="980" width="240" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="tr1" parent="traderecord" vertex="1" value="optionName: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tr2" parent="traderecord" vertex="1" value="amount: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="tr3" parent="traderecord" vertex="1" value="pricePaid: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="78" as="geometry" />
+        </mxCell>
+
+        <!-- ================= PurchaseResult (record) ================= -->
+        <mxCell id="purchaseresult" parent="1" vertex="1" value="PurchaseResult  &#171;record&#187;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="1720" y="980" width="240" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="pr1" parent="purchaseresult" vertex="1" value="sharesCost: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pr2" parent="purchaseresult" vertex="1" value="feeAmount: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="pr3" parent="purchaseresult" vertex="1" value="totalPaid: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="240" height="26" y="78" as="geometry" />
+        </mxCell>
+
+        <!-- ================= GuessMarketException ================= -->
+        <mxCell id="exception" parent="1" vertex="1" value="GuessMarketException" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="2000" y="980" width="260" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="ge1" parent="exception" vertex="1" value="message: String  (English, UI-displayable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="260" height="26" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- ================= UI.Main ================= -->
+        <mxCell id="uimain" parent="1" vertex="1" value="UI.Main" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="900" y="1300" width="280" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="um1" parent="uimain" vertex="1" value="main(args): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="um2" parent="uimain" vertex="1" value="loadEventsFile()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="um3" parent="uimain" vertex="1" value="displayEvents()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="um4" parent="uimain" vertex="1" value="showEventStatus()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="um5" parent="uimain" vertex="1" value="participateInEvent()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="um6" parent="uimain" vertex="1" value="closeEvent()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;whiteSpace=wrap;html=1;fontStyle=0;">
+          <mxGeometry width="280" height="26" y="156" as="geometry" />
+        </mxCell>
+
+        <!-- ================= Edges ================= -->
+        <mxCell id="e_extends" parent="1" edge="1" source="lmsrevent" target="event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;exitX=0;exitY=0.1;exitDx=0;exitDy=0;entryX=1;entryY=0.1;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-41" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Option" vertex="1">
-          <mxGeometry height="78" width="140" x="250" y="390" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-42" parent="TaVf_i9mVDtYa4NC2Mjz-41" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id: int" vertex="1">
-          <mxGeometry height="26" width="140" y="26" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-43" parent="TaVf_i9mVDtYa4NC2Mjz-41" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="name: string" vertex="1">
-          <mxGeometry height="26" width="140" y="52" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-50" edge="1" parent="1" source="TaVf_i9mVDtYa4NC2Mjz-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="TaVf_i9mVDtYa4NC2Mjz-42">
+        <mxCell id="e_options" parent="1" edge="1" value="2 options (ex1)" source="event_options" target="option" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;exitX=0;exitY=0.5;entryX=0.5;entryY=1;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-54" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="LmsrEvent" vertex="1">
-          <mxGeometry height="100" width="160" x="620" y="50" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-55" parent="TaVf_i9mVDtYa4NC2Mjz-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="eventId: int" vertex="1">
-          <mxGeometry height="26" width="160" y="26" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-56" parent="TaVf_i9mVDtYa4NC2Mjz-54" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="160" y="52" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-57" parent="TaVf_i9mVDtYa4NC2Mjz-54" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="instability (b): float" vertex="1">
-          <mxGeometry height="40" width="160" y="60" as="geometry" />
-        </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-60" edge="1" parent="1" source="TaVf_i9mVDtYa4NC2Mjz-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;shape=link;" target="TaVf_i9mVDtYa4NC2Mjz-18">
+        <mxCell id="e_mmid" parent="1" edge="1" value="single MM in ex1" source="event_mmid" target="moneymaker" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;endFill=0;html=1;dashed=1;exitX=0;exitY=0.5;entryX=1;entryY=0.3;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-63" edge="1" parent="1" source="TaVf_i9mVDtYa4NC2Mjz-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="TaVf_i9mVDtYa4NC2Mjz-28">
+        <mxCell id="e_winner" parent="1" edge="1" value="nullable until closed" source="event_winner" target="option" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;endFill=0;html=1;dashed=1;exitX=0;exitY=0.5;entryX=1;entryY=0.7;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="TaVf_i9mVDtYa4NC2Mjz-64" edge="1" parent="1" source="TaVf_i9mVDtYa4NC2Mjz-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="TaVf_i9mVDtYa4NC2Mjz-41">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="230" y="293" />
-              <mxPoint x="230" y="348" />
-              <mxPoint x="410" y="348" />
-              <mxPoint x="410" y="429" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="e_purchase_event" parent="1" edge="1" source="purchase_eventid" target="event" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;endFill=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.05;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_purchase_option" parent="1" edge="1" source="purchase_option" target="option" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_manager_events" parent="1" edge="1" value="holds" source="manager_events" target="event" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamondThin;endFill=1;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_manager_purchases" parent="1" edge="1" value="holds" source="manager_purchases" target="purchase" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamondThin;endFill=1;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.85;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_manager_mm" parent="1" edge="1" value="holds (single instance)" source="manager_mm" target="moneymaker" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamondThin;endFill=1;html=1;exitX=0;exitY=0.5;entryX=1;entryY=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loader_lmsr" parent="1" edge="1" value="constructs + computes initial subsidy" source="loader" target="lmsrevent" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;dashed=1;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loader_manager" parent="1" edge="1" value="replaceState() after full validation" source="loader" target="manager" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;dashed=1;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_facade_manager" parent="1" edge="1" value="Manager.getInstance()" source="facade" target="manager" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;html=1;exitX=0;exitY=0.7;entryX=1;entryY=0.6;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_facade_event" parent="1" edge="1" value="calls buy() / close() / buildStatus() / toDetails()" source="facade" target="event" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;html=1;exitX=0.5;exitY=0;entryX=1;entryY=0.9;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_facade_returns_status" parent="1" edge="1" value="returns" source="facade" target="eventstatus" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;dashed=1;html=1;exitX=0.7;exitY=1;entryX=0.3;entryY=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_facade_returns_purchase" parent="1" edge="1" value="returns" source="facade" target="purchaseresult" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;dashed=1;html=1;exitX=1;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_facade_throws" parent="1" edge="1" value="throws" source="facade" target="exception" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;dashed=1;html=1;exitX=1;exitY=0.7;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ui_facade" parent="1" edge="1" value="the ONLY Engine-side class UI may reference" source="uimain" target="facade" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#d79b00;fontColor=#d79b00;exitX=1;exitY=0.1;entryX=1;entryY=1;">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
