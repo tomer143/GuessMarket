@@ -137,6 +137,9 @@ public class UsersViewController {
     private static LineChart<Number, Number> buildBalanceChart(List<BalanceHistoryPoint> history) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Step");
+        xAxis.setTickUnit(1);
+        xAxis.setMinorTickVisible(false);
+        xAxis.setTickLabelFormatter(Format.integerAxisFormatter());
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Balance");
 
@@ -151,6 +154,10 @@ public class UsersViewController {
         for (BalanceHistoryPoint point : history)
             series.getData().add(new XYChart.Data<>(point.step(), point.balance()));
         chart.getData().add(series);
+
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(Math.max(history.size() - 1, 1));
 
         return chart;
     }

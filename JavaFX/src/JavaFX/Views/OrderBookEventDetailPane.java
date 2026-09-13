@@ -65,6 +65,9 @@ class OrderBookEventDetailPane {
     private static Node buildPriceChart(OrderBookStatus status) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Trade #");
+        xAxis.setTickUnit(1);
+        xAxis.setMinorTickVisible(false);
+        xAxis.setTickLabelFormatter(Format.integerAxisFormatter());
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price per share");
 
@@ -79,6 +82,7 @@ class OrderBookEventDetailPane {
 
         Map<String, XYChart.Series<Number, Number>> seriesByOption = new LinkedHashMap<>();
         Map<String, Integer> tradeCountByOption = new HashMap<>();
+        int maxIndex = 0;
         for (TradeHistoryRecord trade : chronological) {
             XYChart.Series<Number, Number> series = seriesByOption.computeIfAbsent(trade.optionName(), name -> {
                 XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
@@ -87,9 +91,14 @@ class OrderBookEventDetailPane {
             });
 
             int index = tradeCountByOption.merge(trade.optionName(), 1, Integer::sum) - 1;
+            maxIndex = Math.max(maxIndex, index);
             series.getData().add(new XYChart.Data<>(index, trade.price()));
         }
         chart.getData().addAll(seriesByOption.values());
+
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(Math.max(maxIndex, 1));
 
         return chart;
     }

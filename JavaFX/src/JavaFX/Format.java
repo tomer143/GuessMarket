@@ -4,12 +4,27 @@ import Engine.External.EventPhase;
 import Engine.External.FeeCollection;
 import Engine.External.OrderAction;
 import Engine.External.TradingMethod;
+import javafx.util.StringConverter;
 
 import java.util.Locale;
 
 public class Format {
     public static String decimal(double value) {
         return String.format("%.2f", value);
+    }
+
+    public static StringConverter<Number> integerAxisFormatter() {
+        return new StringConverter<>() {
+            @Override
+            public String toString(Number value) {
+                return value == null ? "" : String.valueOf(Math.round(value.doubleValue()));
+            }
+
+            @Override
+            public Number fromString(String string) {
+                return Long.parseLong(string);
+            }
+        };
     }
 
     public static String feeCollection(FeeCollection feeCollection) {

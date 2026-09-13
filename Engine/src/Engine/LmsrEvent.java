@@ -121,9 +121,7 @@ class LmsrEvent extends Event {
                 .map(option -> new OptionStatus(option.name(), this.getOptionChance(option), Manager.getInstance().getOptionTotalShares(this.id, option.id())))
                 .toList();
 
-        List<TradeRecord> history = new ArrayList<>(Manager.getInstance().getPurchasesByEventId(this.id).stream()
-                .map(purchase -> new TradeRecord(purchase.option().name(), purchase.amount(), purchase.price()))
-                .toList());
+        List<TradeRecord> history = new ArrayList<>(computeHistoryEntries().stream().map(HistoryEntry::record).toList());
         Collections.reverse(history);
 
         String winningOptionName = this.winningOption != null ? this.winningOption.name() : null;
@@ -132,16 +130,15 @@ class LmsrEvent extends Event {
     }
 
     protected LmsrParticipation getParticipation(String username) {
-        List<Purchase> ownPurchases = Manager.getInstance().getPurchasesByEventId(this.id).stream()
-                .filter(purchase -> purchase.username().equals(username))
-                .toList();
-
-        List<TradeRecord> history = new ArrayList<>(ownPurchases.stream()
-                .map(purchase -> new TradeRecord(purchase.option().name(), purchase.amount(), purchase.price()))
+        List<TradeRecord> history = new ArrayList<>(computeHistoryEntries().stream()
+                .filter(entry -> entry.username().equals(username))
+                .map(HistoryEntry::record)
                 .toList());
         Collections.reverse(history);
 
-        double totalFeePaid = ownPurchases.stream().mapToDouble(Purchase::feeAmount).sum();
+        double totalFeePaid = Manager.getInstance().getPurchasesByEventId(this.id).stream()
+                .filter(purchase -> purchase.username().equals(username))
+                .mapToDouble(Purchase::feeAmount).sum();
 
         List<OptionStatus> optionStatuses = this.options.stream()
                 .map(option -> new OptionStatus(option.name(), this.getOptionChance(option), Manager.getInstance().getOptionTotalShares(this.id, option.id())))
@@ -150,6 +147,31 @@ class LmsrEvent extends Event {
         String winningOptionName = this.winningOption != null ? this.winningOption.name() : null;
 
         return new LmsrParticipation(history, totalFeePaid, optionStatuses, this.phase, winningOptionName);
+    }
+
+    private record HistoryEntry(String username, TradeRecord record) {}
+
+    private List<HistoryEntry> computeHistoryEntries() {
+        List<Purchase> chronological = Manager.getInstance().getPurchasesByEventId(this.id);
+        Option optionA = this.options.get(0);
+        Option optionB = this.options.get(1);
+        double qA = 0, qB = 0;
+        List<HistoryEntry> result = new ArrayList<>();
+
+        for (Purchase purchase : chronological) {
+            boolean isOptionA = purchase.option().id() == optionA.id();
+            if (isOptionA) qA += purchase.amount(); else qB += purchase.amount();
+
+            double ratioA = Math.exp(qA / this.instability);
+            double ratioB = Math.exp(qB / this.instability);
+            double chanceA = ratioA / (ratioA + ratioB);
+            double otherChance = isOptionA ? (1 - chanceA) : chanceA;
+            String otherName = isOptionA ? optionB.name() : optionA.name();
+
+            TradeRecord record = new TradeRecord(purchase.option().name(), purchase.amount(), purchase.price(), otherName, otherChance);
+            result.add(new HistoryEntry(purchase.username(), record));
+        }
+        return result;
     }
 
     private double getOptionRatio(Option option) {

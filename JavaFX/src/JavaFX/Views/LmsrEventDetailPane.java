@@ -21,7 +21,6 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +76,9 @@ class LmsrEventDetailPane {
     private static Node buildPriceChart(EventStatus status) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Trade #");
+        xAxis.setTickUnit(1);
+        xAxis.setMinorTickVisible(false);
+        xAxis.setTickLabelFormatter(Format.integerAxisFormatter());
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price per share");
 
@@ -90,21 +92,30 @@ class LmsrEventDetailPane {
         Collections.reverse(chronological);
 
         Map<String, XYChart.Series<Number, Number>> seriesByOption = new LinkedHashMap<>();
-        Map<String, Integer> tradeCountByOption = new HashMap<>();
+        int index = 0;
         for (TradeRecord trade : chronological) {
-            XYChart.Series<Number, Number> series = seriesByOption.computeIfAbsent(trade.optionName(), name -> {
-                XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
-                newSeries.setName(name);
-                return newSeries;
-            });
-
-            int index = tradeCountByOption.merge(trade.optionName(), 1, Integer::sum) - 1;
+            XYChart.Series<Number, Number> tradedSeries = seriesByOption.computeIfAbsent(trade.optionName(), LmsrEventDetailPane::newSeries);
             double pricePerShare = trade.amount() == 0 ? 0 : trade.pricePaid() / trade.amount();
-            series.getData().add(new XYChart.Data<>(index, pricePerShare));
+            tradedSeries.getData().add(new XYChart.Data<>(index, pricePerShare));
+
+            XYChart.Series<Number, Number> otherSeries = seriesByOption.computeIfAbsent(trade.otherOptionName(), LmsrEventDetailPane::newSeries);
+            otherSeries.getData().add(new XYChart.Data<>(index, trade.otherOptionChance()));
+
+            index++;
         }
         chart.getData().addAll(seriesByOption.values());
 
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(Math.max(index - 1, 1));
+
         return chart;
+    }
+
+    private static XYChart.Series<Number, Number> newSeries(String name) {
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(name);
+        return series;
     }
 
     private static void wireChanceColor(MFXProgressBar chanceBar) {
