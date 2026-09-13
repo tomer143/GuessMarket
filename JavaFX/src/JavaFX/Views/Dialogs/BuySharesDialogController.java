@@ -1,18 +1,16 @@
 package JavaFX.Views.Dialogs;
 
-import io.github.palexdev.materialfx.controls.MFXComboBox;
+import JavaFX.Views.Components.ToggleChoiceBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.input.MouseEvent;
 import java.util.List;
 
 public class BuySharesDialogController {
     @FXML private MFXTextField usernameField;
-    @FXML private MFXComboBox<String> optionChoice;
+    @FXML private ToggleChoiceBox<String> optionChoice;
     @FXML private Spinner<Integer> amountSpinner;
 
     private final StringProperty username = new SimpleStringProperty();
@@ -24,16 +22,14 @@ public class BuySharesDialogController {
         amountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1_000_000, 1));
 
         username.bind(usernameField.textProperty());
-        optionIndex.bind(optionChoice.getSelectionModel().selectedIndexProperty());
+        optionIndex.bind(optionChoice.selectedIndexProperty());
         amount.bind(amountSpinner.valueProperty());
-
-        optionChoice.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> optionChoice.show());
     }
 
     public void init(String defaultUsername, List<String> optionNames) {
         usernameField.setText(defaultUsername);
-        optionChoice.setItems(FXCollections.observableArrayList(optionNames));
-        optionChoice.getSelectionModel().selectFirst();
+        optionChoice.setItems(optionNames, name -> name);
+        optionChoice.selectFirst();
     }
 
     public StringProperty usernameProperty() {

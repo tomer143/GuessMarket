@@ -3,11 +3,9 @@
     -fx-border-width: 1.5;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
+    -fx-padding: 4;
 }
 
-/* MFXComboBox's default border is a very pale lightgray, which reads as
-   ungrouped from its dropdown-trigger icon. Strengthen it so the field and
-   its trigger visually read as one control, matching .bordered-button. */
 .mfx-combo-box {
     -fx-border-color: #666666;
     -fx-border-width: 1.5;

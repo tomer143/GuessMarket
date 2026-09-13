@@ -2,6 +2,7 @@ package JavaFX;
 
 import Engine.External.EventPhase;
 import Engine.External.FeeCollection;
+import Engine.External.OrderAction;
 import Engine.External.TradingMethod;
 
 import java.util.Locale;
@@ -25,5 +26,9 @@ public class Format {
 
     public static String method(TradingMethod method) {
         return method == TradingMethod.LMSR ? "LMSR" : "Order Book";
+    }
+
+    public static String orderAction(OrderAction side) {
+        return side == OrderAction.BUY ? "Buy" : "Sell";
     }
 }

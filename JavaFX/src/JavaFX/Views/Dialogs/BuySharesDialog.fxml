@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import JavaFX.Views.Components.*?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -10,10 +10,10 @@
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="JavaFX.Views.Dialogs.BuySharesDialogController" hgap="8" vgap="8">
     <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
     <children>
-        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <MFXTextField fx:id="usernameField" prefWidth="220" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="usernameField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="0" GridPane.columnIndex="1" />
         <Label text="Option:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <MFXComboBox fx:id="optionChoice" prefWidth="220" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <ToggleChoiceBox fx:id="optionChoice" GridPane.rowIndex="1" GridPane.columnIndex="1" />
         <Label text="Amount:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
         <Spinner fx:id="amountSpinner" editable="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
     </children>

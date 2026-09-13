@@ -9,7 +9,7 @@
           fx:controller="JavaFX.Views.Dialogs.OpenEventDialogController" hgap="8" vgap="8">
     <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
     <children>
-        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <MFXTextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="usernameField" floatMode="DISABLED" GridPane.rowIndex="0" GridPane.columnIndex="1" />
     </children>
 </GridPane>

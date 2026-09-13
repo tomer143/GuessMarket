@@ -1,20 +1,19 @@
 package JavaFX.Views.Dialogs;
 
 import Engine.External.OrderAction;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
+import JavaFX.Format;
+import JavaFX.Views.Components.ToggleChoiceBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.input.MouseEvent;
 import java.util.List;
 
 public class SubmitOrderDialogController {
     @FXML private MFXTextField usernameField;
-    @FXML private MFXComboBox<String> optionChoice;
-    @FXML private MFXComboBox<OrderAction> sideChoice;
+    @FXML private ToggleChoiceBox<String> optionChoice;
+    @FXML private ToggleChoiceBox<OrderAction> sideChoice;
     @FXML private Spinner<Integer> quantitySpinner;
     @FXML private MFXTextField priceField;
 
@@ -28,23 +27,20 @@ public class SubmitOrderDialogController {
     private void initialize() {
         quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1_000_000, 1));
 
-        sideChoice.setItems(FXCollections.observableArrayList(OrderAction.BUY, OrderAction.SELL));
-        sideChoice.getSelectionModel().selectFirst();
+        sideChoice.setItems(List.of(OrderAction.BUY, OrderAction.SELL), Format::orderAction);
+        sideChoice.selectFirst();
 
         username.bind(usernameField.textProperty());
-        optionIndex.bind(optionChoice.getSelectionModel().selectedIndexProperty());
-        side.bind(sideChoice.getSelectionModel().selectedItemProperty());
+        optionIndex.bind(optionChoice.selectedIndexProperty());
+        side.bind(sideChoice.selectedItemProperty());
         quantity.bind(quantitySpinner.valueProperty());
         priceText.bind(priceField.textProperty());
-
-        optionChoice.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> optionChoice.show());
-        sideChoice.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> sideChoice.show());
     }
 
     public void init(String defaultUsername, List<String> optionNames) {
         usernameField.setText(defaultUsername);
-        optionChoice.setItems(FXCollections.observableArrayList(optionNames));
-        optionChoice.getSelectionModel().selectFirst();
+        optionChoice.setItems(optionNames, name -> name);
+        optionChoice.selectFirst();
     }
 
     public StringProperty usernameProperty() {
