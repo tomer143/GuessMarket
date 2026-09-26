@@ -1,7 +1,7 @@
 package Engine;
 
-import Engine.External.FeeCollection;
-import Engine.External.GuessMarketException;
+import Models.External.FeeCollection;
+import Models.External.GuessMarketException;
 import Engine.Xml.Commission;
 import Engine.Xml.GMEvent;
 import Engine.Xml.GMLMSR;
@@ -215,7 +215,7 @@ class EventFileLoader {
             event.feePercent = feePercent;
             event.feeCollection = feeCollection;
             event.options = options;
-            event.phase = Engine.External.EventPhase.NOT_ACTIVE;
+            event.phase = Models.External.EventPhase.NOT_ACTIVE;
 
             if (event instanceof OrderBookEvent orderBookEvent) {
                 for (Option option : options)

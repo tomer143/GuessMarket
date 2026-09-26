@@ -1,7 +1,7 @@
 package JavaFX.Views.Dialogs;
 
-import Engine.External.EventDetails;
-import Engine.External.GuessMarketException;
+import Models.External.EventDetails;
+import Models.External.GuessMarketException;
 import Engine.GuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;

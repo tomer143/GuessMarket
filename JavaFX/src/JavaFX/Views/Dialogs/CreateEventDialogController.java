@@ -1,7 +1,7 @@
 package JavaFX.Views.Dialogs;
 
-import Engine.External.FeeCollection;
-import Engine.External.TradingMethod;
+import Models.External.FeeCollection;
+import Models.External.TradingMethod;
 import JavaFX.Format;
 import JavaFX.Views.Components.ToggleChoiceBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;

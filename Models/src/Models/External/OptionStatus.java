@@ -1,4 +1,4 @@
-package Engine.External;
+package Models.External;
 
 public class OptionStatus {
     private final String name;

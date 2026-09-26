@@ -1,6 +1,6 @@
 package JavaFX.Models;
 
-import Engine.External.UserSummary;
+import Models.External.UserSummary;
 import javafx.beans.property.*;
 
 public class UserRow {

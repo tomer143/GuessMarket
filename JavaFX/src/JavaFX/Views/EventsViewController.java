@@ -1,9 +1,9 @@
 package JavaFX.Views;
 
-import Engine.External.EventDetails;
-import Engine.External.EventPhase;
-import Engine.External.FeeCollection;
-import Engine.External.TradingMethod;
+import Models.External.EventDetails;
+import Models.External.EventPhase;
+import Models.External.FeeCollection;
+import Models.External.TradingMethod;
 import Engine.GuessMarketEngine;
 import JavaFX.Animations;
 import JavaFX.Format;

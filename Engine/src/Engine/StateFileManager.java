@@ -1,6 +1,6 @@
 package Engine;
 
-import Engine.External.GuessMarketException;
+import Models.External.GuessMarketException;
 
 import java.io.File;
 import java.io.FileInputStream;

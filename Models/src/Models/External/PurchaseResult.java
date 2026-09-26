@@ -1,4 +1,4 @@
-package Engine.External;
+package Models.External;
 
 public class PurchaseResult {
     private final double sharesCost;
