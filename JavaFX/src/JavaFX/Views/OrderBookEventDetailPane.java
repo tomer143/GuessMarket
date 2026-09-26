@@ -1,11 +1,11 @@
 package JavaFX.Views;
 
-import Engine.External.HoldingSummary;
-import Engine.External.OptionMarketData;
-import Engine.External.OrderBookParticipation;
-import Engine.External.OrderBookStatus;
-import Engine.External.RestingOrderView;
-import Engine.External.TradeHistoryRecord;
+import Models.External.HoldingSummary;
+import Models.External.OptionMarketData;
+import Models.External.OrderBookParticipation;
+import Models.External.OrderBookStatus;
+import Models.External.RestingOrderView;
+import Models.External.TradeHistoryRecord;
 import JavaFX.Format;
 import javafx.geometry.Insets;
 import javafx.scene.Node;

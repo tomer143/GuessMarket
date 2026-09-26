@@ -1,8 +1,8 @@
 package JavaFX.Views.Dialogs;
 
-import Engine.External.EventDetails;
-import Engine.External.GuessMarketException;
-import Engine.External.PurchaseResult;
+import Models.External.EventDetails;
+import Models.External.GuessMarketException;
+import Models.External.PurchaseResult;
 import Engine.GuessMarketEngine;
 import JavaFX.Format;
 import javafx.fxml.FXMLLoader;

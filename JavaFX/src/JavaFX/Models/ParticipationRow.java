@@ -1,7 +1,7 @@
 package JavaFX.Models;
 
-import Engine.External.TradingMethod;
-import Engine.External.UserEventParticipation;
+import Models.External.TradingMethod;
+import Models.External.UserEventParticipation;
 import javafx.beans.property.*;
 
 public class ParticipationRow {

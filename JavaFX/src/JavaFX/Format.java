@@ -1,12 +1,10 @@
 package JavaFX;
 
-import Engine.External.EventPhase;
-import Engine.External.FeeCollection;
-import Engine.External.OrderAction;
-import Engine.External.TradingMethod;
+import Models.External.EventPhase;
+import Models.External.FeeCollection;
+import Models.External.OrderAction;
+import Models.External.TradingMethod;
 import javafx.util.StringConverter;
-
-import java.util.Locale;
 
 public class Format {
     public static String decimal(double value) {

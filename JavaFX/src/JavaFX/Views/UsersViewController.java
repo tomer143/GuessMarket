@@ -1,12 +1,12 @@
 package JavaFX.Views;
 
-import Engine.External.*;
 import Engine.GuessMarketEngine;
 import JavaFX.Animations;
 import JavaFX.Format;
 import JavaFX.Models.ParticipationRow;
 import JavaFX.Models.UserRow;
 import JavaFX.Views.Dialogs.AlertUtils;
+import Models.External.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

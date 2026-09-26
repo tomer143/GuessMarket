@@ -1,4 +1,4 @@
-package Engine.External;
+package Models.External;
 
 public class UserSummary {
     private final String username;

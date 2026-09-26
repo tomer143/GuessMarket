@@ -1,9 +1,9 @@
 package JavaFX.Views;
 
-import Engine.External.EventStatus;
-import Engine.External.LmsrParticipation;
-import Engine.External.OptionStatus;
-import Engine.External.TradeRecord;
+import Models.External.EventStatus;
+import Models.External.LmsrParticipation;
+import Models.External.OptionStatus;
+import Models.External.TradeRecord;
 import JavaFX.Animations;
 import JavaFX.Format;
 import io.github.palexdev.materialfx.controls.MFXProgressBar;

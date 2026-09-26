@@ -1,6 +1,5 @@
 package JavaFX.Views;
 
-import Engine.External.*;
 import Engine.GuessMarketEngine;
 import JavaFX.Format;
 import JavaFX.Views.Dialogs.AlertUtils;
@@ -8,6 +7,7 @@ import JavaFX.Views.Dialogs.BuySharesDialog;
 import JavaFX.Views.Dialogs.CloseEventDialog;
 import JavaFX.Views.Dialogs.OpenEventDialog;
 import JavaFX.Views.Dialogs.SubmitOrderDialog;
+import Models.External.*;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
