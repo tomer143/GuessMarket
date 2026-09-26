@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: JavaFX.Main
+Class-Path: Engine.jar lib/jakarta.activation-api.jar lib/jakarta.xml.bind-api.jar lib/jaxb-core.jar lib/jaxb-impl.jar lib/materialfx-11.17.0.jar lib/mfxcore-11.8.0.jar lib/mfxeffects-11.3.0.jar lib/mfxlocalization-11.1.0.jar lib/mfxresources-11.9.1.jar lib/virtualizedfx-11.9.6.jar

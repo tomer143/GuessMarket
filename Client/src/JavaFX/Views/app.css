@@ -1,0 +1,14 @@
+.bordered-button {
+    -fx-border-color: #666666;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+}
+
+.mfx-combo-box {
+    -fx-border-color: #666666;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}

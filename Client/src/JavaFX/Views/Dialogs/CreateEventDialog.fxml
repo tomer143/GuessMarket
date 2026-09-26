@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import JavaFX.Views.Components.*?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="JavaFX.Views.Dialogs.CreateEventDialogController" fitToWidth="true" prefHeight="420">
+    <content>
+    <GridPane hgap="8" vgap="8">
+    <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
+    <children>
+        <Label text="Creating as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="usernameField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Event name:" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="nameField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="descriptionField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Fee percent:" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <Spinner fx:id="feeSpinner" editable="true" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <Label text="Fee collected:" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <ToggleChoiceBox fx:id="feeCollectionChoice" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <Label text="Option A name:" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="optionAField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+
+        <Label text="Option B name:" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <MFXTextField fx:id="optionBField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+
+        <Label text="Trading method:" GridPane.rowIndex="7" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
+        <ToggleChoiceBox fx:id="methodChoice" GridPane.rowIndex="7" GridPane.columnIndex="1" />
+
+        <HBox fx:id="lmsrFieldsBox" spacing="8" GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
+            <children>
+                <Label text="Liquidity (b):" />
+                <Spinner fx:id="liquiditySpinner" editable="true" />
+            </children>
+        </HBox>
+
+        <VBox fx:id="orderBookFieldsBox" spacing="8" GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
+            <children>
+                <HBox spacing="8">
+                    <children>
+                        <Label text="Base value (d):" />
+                        <Spinner fx:id="baseValueSpinner" editable="true" />
+                    </children>
+                </HBox>
+                <HBox spacing="8">
+                    <children>
+                        <Label text="Initial amount:" />
+                        <Spinner fx:id="initialAmountSpinner" editable="true" />
+                    </children>
+                </HBox>
+                <MFXToggleButton fx:id="allowMintToggle" text="Allow minting" />
+            </children>
+        </VBox>
+    </children>
+    </GridPane>
+    </content>
+</ScrollPane>
