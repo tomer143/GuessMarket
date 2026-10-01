@@ -1,9 +1,6 @@
 package JavaFX.Models;
 
-import Models.External.EventDetails;
-import Models.External.EventPhase;
-import Models.External.FeeCollection;
-import Models.External.TradingMethod;
+import Models.External.*;
 import javafx.beans.property.*;
 
 public class EventRow {
