@@ -1,6 +1,6 @@
 package Client;
 
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import Client.Views.RootLayoutController;
 import io.github.palexdev.materialfx.MFXResourcesLoader;
 import javafx.application.Application;

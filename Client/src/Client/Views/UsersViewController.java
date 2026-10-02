@@ -1,7 +1,7 @@
 package Client.Views;
 
 import Models.External.*;
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import Client.Animations;
 import Client.Format;
 import Client.Models.ParticipationRow;
@@ -28,9 +28,9 @@ public class UsersViewController {
     @FXML private VBox detailContainer;
 
     private final ObservableList<UserRow> rows = FXCollections.observableArrayList();
-    private GuessMarketEngine engine;
+    private ClientGuessMarketEngine engine;
+    private String currentUsername;
     private Runnable onDataChanged;
-    private String selectedUsername;
     private Integer selectedParticipationEventId;
 
     @FXML

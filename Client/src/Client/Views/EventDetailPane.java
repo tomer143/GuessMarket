@@ -1,6 +1,6 @@
 package Client.Views;
 
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import Client.Format;
 import Client.Views.Dialogs.AlertUtils;
 import Client.Views.Dialogs.BuySharesDialog;
@@ -16,12 +16,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 class EventDetailPane extends BorderPane {
-    private final GuessMarketEngine engine;
+    private final ClientGuessMarketEngine engine;
     private final int eventId;
     private final String contextUsername;
     private final Runnable onDataChanged;
 
-    public EventDetailPane(GuessMarketEngine engine, int eventId, String contextUsername, Runnable onDataChanged) {
+    public EventDetailPane(ClientGuessMarketEngine engine, int eventId, String contextUsername, Runnable onDataChanged) {
         this.engine = engine;
         this.eventId = eventId;
         this.contextUsername = contextUsername;

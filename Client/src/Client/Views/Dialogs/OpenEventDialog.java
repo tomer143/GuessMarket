@@ -1,7 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class OpenEventDialog {
-    public static void show(GuessMarketEngine engine, EventDetails event, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, EventDetails event, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(OpenEventDialog.class.getResource("OpenEventDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();

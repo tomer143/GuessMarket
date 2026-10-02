@@ -1,7 +1,7 @@
 package Client.Views;
 
 import Models.External.*;
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import Client.Animations;
 import Client.Format;
 import Client.Models.EventRow;
@@ -34,7 +34,8 @@ public class EventsViewController {
 
     private final ObservableList<EventRow> rows = FXCollections.observableArrayList();
     private final FilteredList<EventRow> filteredRows = new FilteredList<>(rows);
-    private GuessMarketEngine engine;
+    private ClientGuessMarketEngine engine;
+    private String username;
     private Runnable onDataChanged;
     private EventDetailPane detailPane;
 
@@ -60,8 +61,9 @@ public class EventsViewController {
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showDetail(newValue));
     }
 
-    public void init(GuessMarketEngine engine, Runnable onDataChanged) {
+    public void init(ClientGuessMarketEngine engine, String username, Runnable onDataChanged) {
         this.engine = engine;
+        this.username = username;
         this.onDataChanged = onDataChanged;
 
         createEventButton.setOnAction(event -> CreateEventDialog.show(engine, onDataChanged));
@@ -97,7 +99,7 @@ public class EventsViewController {
             detailContainer.getChildren().setAll(new Label("Select an event to see its details."));
             return;
         }
-        detailPane = new EventDetailPane(engine, row.id(), null, onDataChanged);
+        detailPane = new EventDetailPane(engine, row.id(), username, onDataChanged);
         VBox.setVgrow(detailPane, Priority.ALWAYS);
         detailContainer.getChildren().setAll(detailPane);
         Animations.fadeIn(detailPane, Duration.millis(250));

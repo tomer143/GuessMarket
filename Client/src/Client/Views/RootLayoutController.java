@@ -1,6 +1,6 @@
 package Client.Views;
 
-import Engine.GuessMarketEngine;
+import Engine.ClientGuessMarketEngine;
 import Client.Animations;
 import Client.Tasks.LoadEventsFileTask;
 import Client.Views.Dialogs.AlertUtils;
@@ -31,7 +31,7 @@ public class RootLayoutController {
     @FXML private EventsViewController eventsViewController;
     @FXML private UsersViewController usersViewController;
 
-    private GuessMarketEngine engine;
+    private ClientGuessMarketEngine engine;
     private Stage primaryStage;
 
     @FXML
