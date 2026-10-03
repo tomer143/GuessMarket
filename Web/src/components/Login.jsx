@@ -43,9 +43,11 @@ export default function Login({ onLoggedIn }) {
           {busy ? 'Logging in…' : 'Log In'}
         </button>
         <div className="error-text" role="alert">{error}</div>
-        <div className="login-ticks" aria-hidden="true">
-          <span /><span /><span /><span /><span />
-        </div>
+        {busy && (
+          <div className="login-ticks" aria-hidden="true">
+            <span /><span /><span /><span /><span />
+          </div>
+        )}
       </form>
     </div>
   );
