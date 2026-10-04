@@ -72,7 +72,7 @@ class OrderBookEvent extends Event {
         if (requester.balance() < this.initialAmount)
             throw new GuessMarketException("You do not have enough balance to open event \"" + this.name + "\" (requires " + this.initialAmount + ").");
 
-        requester.adjustBalance(-this.initialAmount);
+        requester.adjustBalance(-this.initialAmount, "Paid initial share purchase to open event \"" + this.name + "\"");
         this.accountBalance = this.initialAmount;
         participantNetFlow.merge(requestingUsername, (double) -this.initialAmount, Double::sum);
 
@@ -162,8 +162,8 @@ class OrderBookEvent extends Event {
         double tradeValue = quantity * price;
         double feeAmount = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * tradeValue : 0;
 
-        buyer.adjustBalance(-(tradeValue + feeAmount));
-        seller.adjustBalance(tradeValue);
+        buyer.adjustBalance(-(tradeValue + feeAmount), "Bought " + quantity + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
+        seller.adjustBalance(tradeValue, "Sold " + quantity + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
         this.accountBalance += feeAmount;
         this.totalFeeCollected += feeAmount;
         participantNetFlow.merge(buyerUsername, -(tradeValue + feeAmount), Double::sum);
@@ -212,8 +212,8 @@ class OrderBookEvent extends Event {
         double feeA = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * quantity * priceA : 0;
         double feeB = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * quantity * priceB : 0;
 
-        incomingAccount.adjustBalance(-(quantity * priceA + feeA));
-        restingAccount.adjustBalance(-(quantity * priceB + feeB));
+        incomingAccount.adjustBalance(-(quantity * priceA + feeA), "Bought " + quantity + " share(s) of \"" + option.name() + "\" (minted) in event \"" + this.name + "\"");
+        restingAccount.adjustBalance(-(quantity * priceB + feeB), "Bought " + quantity + " share(s) of \"" + other.name() + "\" (minted) in event \"" + this.name + "\"");
         this.accountBalance += quantity * priceA + quantity * priceB + feeA + feeB;
         this.totalFeeCollected += feeA + feeB;
         participantNetFlow.merge(incomingUsername, -(quantity * priceA + feeA), Double::sum);
@@ -252,12 +252,12 @@ class OrderBookEvent extends Event {
 
             this.totalFeeCollected += feeAmount;
             this.accountBalance -= netPayout;
-            Manager.getInstance().getUserByUsername(holding.username()).adjustBalance(netPayout);
+            Manager.getInstance().getUserByUsername(holding.username()).adjustBalance(netPayout, "Payout from closed event \"" + this.name + "\"");
             participantNetFlow.merge(holding.username(), netPayout, Double::sum);
             if (feeAmount > 0) participantFeesPaid.merge(holding.username(), feeAmount, Double::sum);
         }
 
-        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(this.accountBalance);
+        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(this.accountBalance, "Remaining balance refunded from closed event \"" + this.name + "\"");
         participantNetFlow.merge(this.mmUsername, this.accountBalance, Double::sum);
         this.accountBalance = 0;
 

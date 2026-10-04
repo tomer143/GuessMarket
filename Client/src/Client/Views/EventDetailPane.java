@@ -10,12 +10,18 @@ import Client.Views.Dialogs.SubmitOrderDialog;
 import Models.External.*;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 class EventDetailPane extends BorderPane {
+    private double dividerPosition = 0.68;
+
     private final ClientGuessMarketEngine engine;
     private final int eventId;
     private final String contextUsername;
@@ -73,25 +79,39 @@ class EventDetailPane extends BorderPane {
         setTop(new VBox(header, actions));
 
         try {
+            Node market;
+            Node participation = null;
             if (event.method() == TradingMethod.LMSR) {
-                if (contextUsername != null) {
-                    LmsrParticipation participation = engine.getUserLmsrParticipation(event.id(), contextUsername);
-                    setCenter(LmsrEventDetailPane.buildParticipation(participation));
-                } else {
-                    EventStatus status = engine.getEventStatus(event.id());
-                    setCenter(LmsrEventDetailPane.build(status));
-                }
+                market = LmsrEventDetailPane.build(engine.getEventStatus(event.id()));
+                if (contextUsername != null)
+                    participation = LmsrEventDetailPane.buildParticipation(engine.getUserLmsrParticipation(event.id(), contextUsername));
             } else {
-                if (contextUsername != null) {
-                    OrderBookParticipation participation = engine.getUserOrderBookParticipation(event.id(), contextUsername);
-                    setCenter(OrderBookEventDetailPane.buildParticipation(participation));
-                } else {
-                    OrderBookStatus status = engine.getOrderBookStatus(event.id());
-                    setCenter(OrderBookEventDetailPane.build(status));
-                }
+                market = OrderBookEventDetailPane.build(engine.getOrderBookStatus(event.id()));
+                if (contextUsername != null)
+                    participation = OrderBookEventDetailPane.buildParticipation(engine.getUserOrderBookParticipation(event.id(), contextUsername));
             }
+
+            if (participation == null) {
+                setCenter(market);
+            } else {
+                Label participationTitle = new Label("Participations information");
+                participationTitle.setStyle("-fx-font-weight: bold;");
+                participationTitle.setPadding(new Insets(0, 10, 0, 10));
+
+                VBox participationBox = new VBox(6, participationTitle, participation);
+                VBox.setVgrow(participation, Priority.ALWAYS);
+
+                if (getCenter() instanceof SplitPane previous && previous.getDividers().size() == 1)
+                    dividerPosition = previous.getDividerPositions()[0];
+
+                SplitPane split = new SplitPane(market, participationBox);
+                split.setOrientation(Orientation.VERTICAL);
+                split.setDividerPositions(dividerPosition);
+                setCenter(split);
+            }
+            AlertUtils.clearReportedError("Could not load event status");
         } catch (GuessMarketException exception) {
-            AlertUtils.showError("Could not load event status", exception.getMessage());
+            AlertUtils.showErrorOnce("Could not load event status", exception.getMessage());
         }
     }
 

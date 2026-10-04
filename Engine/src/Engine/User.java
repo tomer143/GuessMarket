@@ -9,13 +9,13 @@ class User implements Serializable {
     private final String username;
     private double balance;
     private boolean blocked;
-    private final List<Double> balanceHistory = new ArrayList<>();
+    private final List<BalanceLedgerLine> ledger = new ArrayList<>();
 
     public User(String username, double balance) {
         this.username = username;
         this.balance = balance;
         this.blocked = false;
-        this.balanceHistory.add(balance);
+        this.ledger.add(new BalanceLedgerLine("Initial balance", balance, balance));
     }
 
     public String username() {
@@ -30,14 +30,14 @@ class User implements Serializable {
         return blocked;
     }
 
-    public void adjustBalance(double delta) {
+    public void adjustBalance(double delta, String description) {
         this.balance += delta;
         if (this.balance < 0)
             this.blocked = true;
-        this.balanceHistory.add(this.balance);
+        this.ledger.add(new BalanceLedgerLine(description, delta, this.balance));
     }
 
-    public List<Double> balanceHistory() {
-        return Collections.unmodifiableList(balanceHistory);
+    public List<BalanceLedgerLine> ledger() {
+        return Collections.unmodifiableList(ledger);
     }
 }

@@ -4,10 +4,14 @@ import Models.External.*;
 import Engine.ClientGuessMarketEngine;
 import Client.Animations;
 import Client.Format;
+import Client.Models.LedgerRow;
 import Client.Models.ParticipationRow;
 import Client.Models.UserRow;
+import Client.Tasks.LoadEventsFileTask;
 import Client.Views.Dialogs.AlertUtils;
-import javafx.beans.binding.Bindings;
+import Client.Views.Dialogs.DepositDialog;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,123 +19,224 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UsersViewController {
+    @FXML private MFXButton loadButton;
+    @FXML private Label filePathLabel;
+    @FXML private MFXProgressBar progressBar;
+    @FXML private Label progressLabel;
+
     @FXML private TableView<UserRow> table;
-    @FXML private VBox detailContainer;
+    @FXML private TableColumn<UserRow, Number> balanceColumn;
+    @FXML private TableColumn<UserRow, String> mmColumn;
+
+    @FXML private VBox accountDetailsBox;
+    @FXML private Label balanceLabel;
+    @FXML private MFXButton depositButton;
+
+    @FXML private TableView<ParticipationRow> participationsTable;
+    @FXML private TableColumn<ParticipationRow, TradingMethod> methodColumn;
+    @FXML private TableColumn<ParticipationRow, Boolean> roleColumn;
+    @FXML private VBox eventDetailContainer;
 
     private final ObservableList<UserRow> rows = FXCollections.observableArrayList();
+    private final ObservableList<ParticipationRow> participations = FXCollections.observableArrayList();
     private ClientGuessMarketEngine engine;
     private String currentUsername;
     private Runnable onDataChanged;
-    private Integer selectedParticipationEventId;
+    private Set<String> mmUsernames = Set.of();
+    private Integer selectedEventId;
+    private EventDetailPane shownEventPane;
+    private Integer shownEventId;
+    private boolean updatingParticipations;
+    private int shownLedgerSize = -1;
 
     @FXML
     private void initialize() {
         table.setItems(rows);
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            selectedUsername = newValue == null ? null : newValue.username();
-            showUserDetail(selectedUsername);
+        balanceColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Number item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : Format.decimal(item.doubleValue()));
+            }
         });
+        mmColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().username()));
+        mmColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : (mmUsernames.contains(item) ? "Yes" : "No"));
+            }
+        });
+
+        participationsTable.setItems(participations);
+        participationsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        methodColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(TradingMethod item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : Format.method(item));
+            }
+        });
+        roleColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : (item ? "Market maker" : "Participant"));
+            }
+        });
+        participationsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, participation) -> {
+            if (updatingParticipations) return;
+            selectedEventId = participation == null ? null : participation.eventId();
+            showSelectedEvent();
+        });
+
+        depositButton.setOnAction(e -> DepositDialog.show(engine, currentUsername, onDataChanged));
     }
 
-    public void init(GuessMarketEngine engine, Runnable onDataChanged) {
+    public void init(ClientGuessMarketEngine engine, String currentUsername, Runnable onDataChanged) {
         this.engine = engine;
+        this.currentUsername = currentUsername;
         this.onDataChanged = onDataChanged;
     }
 
-    private void showUserDetail(String username) {
-        if (username == null) {
-            detailContainer.getChildren().setAll(new Label("Select a user to see their details."));
-            return;
-        }
+    @FXML
+    private void onLoadClicked() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        File file = fileChooser.showOpenDialog(loadButton.getScene().getWindow());
+        if (file == null) return;
 
+        loadButton.setDisable(true);
+        progressBar.setVisible(true);
+        progressBar.setManaged(true);
+
+        LoadEventsFileTask task = new LoadEventsFileTask(engine, file.getAbsolutePath());
+        progressBar.progressProperty().bind(task.progressProperty());
+        progressLabel.textProperty().bind(task.messageProperty());
+
+        task.setOnSucceeded(event -> {
+            unbindProgress();
+            loadButton.setDisable(false);
+            filePathLabel.setText(file.getAbsolutePath());
+            onDataChanged.run();
+        });
+
+        task.setOnFailed(event -> {
+            unbindProgress();
+            loadButton.setDisable(false);
+            Throwable exception = task.getException();
+            AlertUtils.showError("Could not load the file", exception == null ? "Unknown error." : exception.getMessage());
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void unbindProgress() {
+        progressBar.progressProperty().unbind();
+        progressLabel.textProperty().unbind();
+        progressBar.setVisible(false);
+        progressBar.setManaged(false);
+    }
+
+    private void refreshOwnAccount() {
         try {
-            UserDetails details = engine.getUserDetails(username);
-            UserRow headerRow = new UserRow(new UserSummary(details.username(), details.balance(), details.blocked()));
+            UserDetails details = engine.getUserDetails(currentUsername);
+            balanceLabel.setText("Account balance: " + Format.decimal(details.balance()) + (details.blocked() ? "   (BLOCKED)" : ""));
 
-            Label title = new Label();
-            title.textProperty().bind(headerRow.usernameProperty());
-            title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-            Label balanceLabel = new Label();
-            balanceLabel.textProperty().bind(Bindings.createStringBinding(
-                    () -> "Account balance: " + Format.decimal(headerRow.balanceProperty().get())
-                            + (headerRow.blockedProperty().get() ? "   (BLOCKED)" : ""),
-                    headerRow.balanceProperty(), headerRow.blockedProperty()));
-
-            VBox header = new VBox(4, title, balanceLabel);
-
-            LineChart<Number, Number> balanceChart = buildBalanceChart(engine.getUserBalanceHistory(username));
-
-            ObservableList<ParticipationRow> participations = FXCollections.observableArrayList(
-                    details.participations().stream().map(ParticipationRow::new).toList());
-
-            TableView<ParticipationRow> participationsTable = new TableView<>();
-            TableColumn<ParticipationRow, String> eventNameColumn = new TableColumn<>("Event");
-            eventNameColumn.setCellValueFactory(new PropertyValueFactory<>("eventName"));
-            TableColumn<ParticipationRow, TradingMethod> methodColumn = new TableColumn<>("Type");
-            methodColumn.setCellValueFactory(new PropertyValueFactory<>("method"));
-            methodColumn.setCellFactory(column -> new TableCell<>() {
-                @Override
-                protected void updateItem(TradingMethod item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null : Format.method(item));
-                }
-            });
-            TableColumn<ParticipationRow, Boolean> roleColumn = new TableColumn<>("Role");
-            roleColumn.setCellValueFactory(new PropertyValueFactory<>("mm"));
-            roleColumn.setCellFactory(column -> new TableCell<>() {
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null : (item ? "Market maker" : "Participant"));
-                }
-            });
-            participationsTable.getColumns().addAll(eventNameColumn, methodColumn, roleColumn);
-            participationsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-            participationsTable.setItems(participations);
-
-            double rowHeight = 32;
-            int maxVisibleRows = 6;
-            participationsTable.setFixedCellSize(rowHeight);
-            participationsTable.prefHeightProperty().bind(Bindings.createDoubleBinding(
-                    () -> rowHeight * (Math.min(Math.max(participations.size(), 1), maxVisibleRows) + 1) + 2,
-                    participations));
-            participationsTable.setMinHeight(Region.USE_PREF_SIZE);
-            participationsTable.setMaxHeight(Region.USE_PREF_SIZE);
-
-            VBox eventDetailContainer = new VBox();
-            VBox.setVgrow(eventDetailContainer, Priority.ALWAYS);
-            eventDetailContainer.getChildren().add(new Label("Select an event above to see its details."));
-
-            participationsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, participation) -> {
-                selectedParticipationEventId = participation == null ? null : participation.eventId();
-                if (participation == null) return;
-                EventDetailPane pane = new EventDetailPane(engine, participation.eventId(), username, onDataChanged);
-                VBox.setVgrow(pane, Priority.ALWAYS);
-                eventDetailContainer.getChildren().setAll(pane);
-            });
-
-            if (selectedParticipationEventId != null) {
-                participations.stream().filter(row -> row.eventId() == selectedParticipationEventId).findFirst()
-                        .ifPresent(row -> participationsTable.getSelectionModel().select(row));
+            List<BalanceLedgerEntry> ledger = engine.getUserBalanceLedger(currentUsername);
+            if (ledger.size() != shownLedgerSize) {
+                boolean firstBuild = shownLedgerSize < 0;
+                shownLedgerSize = ledger.size();
+                VBox content = new VBox(10, buildBalanceChart(engine.getUserBalanceHistory(currentUsername)), buildLedgerTable(ledger));
+                accountDetailsBox.getChildren().setAll(content);
+                if (firstBuild) Animations.fadeIn(content, Duration.millis(250));
             }
 
-            VBox content = new VBox(10, header, balanceChart, participationsTable, eventDetailContainer);
-            VBox.setVgrow(content, Priority.ALWAYS);
-            detailContainer.getChildren().setAll(content);
-            Animations.fadeIn(content, Duration.millis(250));
+            updateParticipations(details.participations());
+            AlertUtils.clearReportedError("Could not load user details");
         } catch (GuessMarketException exception) {
-            AlertUtils.showError("Could not load user details", exception.getMessage());
+            AlertUtils.showErrorOnce("Could not load user details", exception.getMessage());
         }
+    }
+
+    private void updateParticipations(List<UserEventParticipation> latest) {
+        boolean unchanged = latest.size() == participations.size();
+        for (int i = 0; unchanged && i < latest.size(); i++)
+            unchanged = latest.get(i).eventId() == participations.get(i).eventId();
+
+        if (!unchanged) {
+            updatingParticipations = true;
+            try {
+                participations.setAll(latest.stream().map(ParticipationRow::new).toList());
+                ParticipationRow selected = participations.stream().filter(row -> row.eventId() == selectedEventIdOrNone())
+                        .findFirst().orElse(null);
+                if (selected != null) participationsTable.getSelectionModel().select(selected);
+                else selectedEventId = null;
+            } finally {
+                updatingParticipations = false;
+            }
+        }
+        showSelectedEvent();
+    }
+
+    private int selectedEventIdOrNone() {
+        return selectedEventId == null ? Integer.MIN_VALUE : selectedEventId;
+    }
+
+    private void showSelectedEvent() {
+        if (selectedEventId == null) {
+            shownEventPane = null;
+            shownEventId = null;
+            eventDetailContainer.getChildren().setAll(new Label("Select an event above to see its details and trade."));
+            return;
+        }
+        if (shownEventPane != null && selectedEventId.equals(shownEventId)) {
+            shownEventPane.refresh();
+            return;
+        }
+        shownEventId = selectedEventId;
+        shownEventPane = new EventDetailPane(engine, selectedEventId, currentUsername, onDataChanged);
+        VBox.setVgrow(shownEventPane, Priority.ALWAYS);
+        eventDetailContainer.getChildren().setAll(shownEventPane);
+    }
+
+    private static TableView<LedgerRow> buildLedgerTable(List<BalanceLedgerEntry> ledger) {
+        TableView<LedgerRow> table = new TableView<>();
+        TableColumn<LedgerRow, String> descriptionColumn = new TableColumn<>("Description");
+        descriptionColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("description"));
+        TableColumn<LedgerRow, Number> amountColumn = new TableColumn<>("Amount");
+        amountColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("amount"));
+        TableColumn<LedgerRow, Number> balanceColumn = new TableColumn<>("Balance");
+        balanceColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("resultingBalance"));
+        table.getColumns().addAll(descriptionColumn, amountColumn, balanceColumn);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+        List<LedgerRow> mostRecentFirst = ledger.stream().map(LedgerRow::new).collect(Collectors.toList());
+        java.util.Collections.reverse(mostRecentFirst);
+        table.setItems(FXCollections.observableArrayList(mostRecentFirst));
+
+        double rowHeight = 28;
+        int maxVisibleRows = 5;
+        table.setFixedCellSize(rowHeight);
+        table.setPrefHeight(rowHeight * (Math.min(Math.max(mostRecentFirst.size(), 1), maxVisibleRows) + 1) + 2);
+        table.setMinHeight(Region.USE_PREF_SIZE);
+        table.setMaxHeight(Region.USE_PREF_SIZE);
+
+        return table;
     }
 
     private static LineChart<Number, Number> buildBalanceChart(List<BalanceHistoryPoint> history) {
@@ -148,7 +253,7 @@ public class UsersViewController {
         chart.setCreateSymbols(false);
         chart.setAnimated(false);
         chart.setLegendVisible(false);
-        chart.setPrefHeight(220);
+        chart.setPrefHeight(200);
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         for (BalanceHistoryPoint point : history)
@@ -164,13 +269,17 @@ public class UsersViewController {
 
     public void refresh() {
         List<UserSummary> latest = engine.getAllUsers();
+        mmUsernames = engine.getAllEvents().stream().map(EventDetails::mmUsername).collect(Collectors.toSet());
 
-        for (UserSummary source : latest) {
+        List<UserSummary> others = latest.stream().filter(user -> !user.username().equals(currentUsername)).toList();
+
+        for (UserSummary source : others) {
             rows.stream().filter(row -> row.username().equals(source.username())).findFirst()
                     .ifPresentOrElse(row -> row.update(source), () -> rows.add(new UserRow(source)));
         }
-        rows.removeIf(row -> latest.stream().noneMatch(source -> source.username().equals(row.username())));
+        rows.removeIf(row -> others.stream().noneMatch(source -> source.username().equals(row.username())));
+        table.refresh();
 
-        if (selectedUsername != null) showUserDetail(selectedUsername);
+        refreshOwnAccount();
     }
 }

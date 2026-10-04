@@ -1,69 +1,58 @@
 package Engine;
 
-import Models.External.FeeCollection;
-import Models.External.GuessMarketException;
 import Engine.Xml.Commission;
 import Engine.Xml.GMEvent;
 import Engine.Xml.GMLMSR;
 import Engine.Xml.GMMethod;
 import Engine.Xml.GMOptions;
 import Engine.Xml.GMOrderBook;
-import Engine.Xml.GMUser;
 import Engine.Xml.GuessMarket;
+import Models.External.FeeCollection;
+import Models.External.GuessMarketException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 class EventFileLoader {
     private static final String GENERATED_PACKAGE_NAME = "Engine.Xml";
 
-    public static void load(String path) throws GuessMarketException {
+    public static void loadFromFile(String path) throws GuessMarketException {
         validatePath(path);
 
-        GuessMarket guessMarket = parseDocument(path);
+        try (InputStream inputStream = new FileInputStream(path)) {
+            loadFromStream(inputStream, null);
+        } catch (IOException exception) {
+            throw new GuessMarketException("The file \"" + path + "\" could not be read: " + exception.getMessage());
+        }
+    }
+
+    public static void loadFromStream(InputStream inputStream, String uploaderUsername) throws GuessMarketException {
+        GuessMarket guessMarket = parseDocument(inputStream);
         if (guessMarket == null)
             throw new GuessMarketException("The file could not be parsed as valid XML.");
 
-        if (guessMarket.getGMUsers() == null)
-            throw new GuessMarketException("The file does not contain a GM-users section.");
-
         if (guessMarket.getGMEvents() == null)
             throw new GuessMarketException("The file does not contain a GM-events section.");
-
-        List<GMUser> userElements = guessMarket.getGMUsers().getGMUser();
-        if (userElements.isEmpty())
-            throw new GuessMarketException("The file does not contain any users.");
 
         List<GMEvent> eventElements = guessMarket.getGMEvents().getGMEvent();
         if (eventElements.isEmpty())
             throw new GuessMarketException("The file does not contain any events.");
 
-        List<User> users = new ArrayList<>();
-        Set<String> existingUsernames = new HashSet<>();
-        Map<Integer, String> mmAssignments = new HashMap<>();
-
-        for (GMUser userElement : userElements) {
-            if (userElement == null)
-                throw new GuessMarketException("The file contains an empty user entry.");
-
-            User user = parseUser(userElement, mmAssignments);
-
-            if (existingUsernames.contains(user.username()))
-                throw new GuessMarketException("Duplicate username \"" + user.username() + "\" found in the file.");
-
-            existingUsernames.add(user.username());
-            users.add(user);
-        }
+        Set<String> existingEventNames = Manager.getInstance().getEvents().stream()
+                .map(event -> event.name.toLowerCase())
+                .collect(java.util.stream.Collectors.toSet());
+        Set<String> namesInThisFile = new HashSet<>();
 
         List<Event> events = new ArrayList<>();
-        Set<Integer> existingIds = new HashSet<>();
+        int nextId = Manager.getInstance().getEvents().stream().mapToInt(event -> event.id).max().orElse(0);
 
         for (GMEvent eventElement : eventElements) {
             if (eventElement == null)
@@ -71,24 +60,20 @@ class EventFileLoader {
 
             Event event = parseEvent(eventElement);
 
-            if (existingIds.contains(event.id))
-                throw new GuessMarketException("Duplicate event id " + event.id + " found in the file.");
+            String lowerName = event.name.toLowerCase();
+            if (existingEventNames.contains(lowerName) || namesInThisFile.contains(lowerName))
+                throw new GuessMarketException("An event named \"" + event.name + "\" already exists.");
+            namesInThisFile.add(lowerName);
 
-            String mmUsername = mmAssignments.remove(event.id);
-            if (mmUsername == null)
-                throw new GuessMarketException("Event \"" + event.name + "\" (id " + event.id + ") has no market maker assigned to it.");
-            if (!existingUsernames.contains(mmUsername))
-                throw new GuessMarketException("Event \"" + event.name + "\" (id " + event.id + ") is assigned to an unknown user \"" + mmUsername + "\".");
-            event.mmUsername = mmUsername;
+            nextId++;
+            event.id = nextId;
+            event.mmUsername = uploaderUsername;
 
-            existingIds.add(event.id);
             events.add(event);
         }
 
-        if (!mmAssignments.isEmpty())
-            throw new GuessMarketException("A user is assigned as market maker of event id " + mmAssignments.keySet().iterator().next() + ", which does not exist in this file.");
-
-        Manager.getInstance().replaceState(events, users);
+        for (Event event : events)
+            Manager.getInstance().addEvent(event);
     }
 
     private static void validatePath(String path) throws GuessMarketException {
@@ -103,11 +88,11 @@ class EventFileLoader {
             throw new GuessMarketException("The file \"" + path + "\" does not exist.");
     }
 
-    private static GuessMarket parseDocument(String path) throws GuessMarketException {
+    private static GuessMarket parseDocument(InputStream inputStream) throws GuessMarketException {
         try {
             JAXBContext context = JAXBContext.newInstance(GENERATED_PACKAGE_NAME);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            return (GuessMarket) unmarshaller.unmarshal(new File(path));
+            return (GuessMarket) unmarshaller.unmarshal(inputStream);
         } catch (JAXBException exception) {
             throw new GuessMarketException("The file could not be parsed as valid XML: " + getParsingErrorMessage(exception));
         } catch (ClassCastException exception) {
@@ -115,45 +100,22 @@ class EventFileLoader {
         }
     }
 
-    private static User parseUser(GMUser userElement, Map<Integer, String> mmAssignments) throws GuessMarketException {
+    private static Event parseEvent(GMEvent eventElement) throws GuessMarketException {
         try {
-            String name = userElement.getName();
-            if (name == null || name.isBlank())
-                throw new GuessMarketException("The file contains a user with a missing or blank name.");
-            
-            String username = name.trim();
-
-            int initialCash = userElement.getInitialCash();
-            if (initialCash <= 0)
-                throw new GuessMarketException("User \"" + username + "\" must have an initial cash balance greater than 0.");
-
-            if (userElement.getGMMarketMaker() != null) {
-                for (Engine.Xml.Event eventRef : userElement.getGMMarketMaker().getEvent()) {
-                    int eventId = eventRef.getId();
-                    if (mmAssignments.containsKey(eventId))
-                        throw new GuessMarketException("Event id " + eventId + " has more than one market maker assigned to it.");
-                    mmAssignments.put(eventId, username);
-                }
-            }
-
-            return new User(username, initialCash);
+            return parseEventCommon(eventElement);
         } catch (GuessMarketException exception) {
             throw exception;
         } catch (Exception exception) {
-            throw new GuessMarketException("The file contains a user with missing or malformed data: " + exception.getMessage());
+            throw new GuessMarketException("The file contains an event with missing or malformed data: " + exception.getMessage());
         }
     }
 
-    private static Event parseEvent(GMEvent eventElement) throws GuessMarketException {
+    private static Event parseEventCommon(GMEvent eventElement) throws GuessMarketException {
         try {
             String name = eventElement.getName();
             if (name == null || name.isBlank())
                 throw new GuessMarketException("The file contains an event with a missing or blank name.");
             String eventName = name.trim();
-
-            int id = eventElement.getId();
-            if (id == 0)
-                throw new GuessMarketException("Event \"" + eventName + "\" is missing a valid numeric id.");
 
             String description = eventElement.getDescription();
             if (description == null)
@@ -209,7 +171,6 @@ class EventFileLoader {
                 throw new GuessMarketException("Event \"" + eventName + "\" is missing a GM-LMSR or GM-order-book section.");
             }
 
-            event.id = id;
             event.name = eventName;
             event.description = description.trim();
             event.feePercent = feePercent;

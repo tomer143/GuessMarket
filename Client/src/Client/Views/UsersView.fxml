@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -7,38 +9,95 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<SplitPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="Client.Views.UsersViewController" dividerPositions="0.28">
-    <items>
-        <VBox>
-            <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Client.Views.UsersViewController" spacing="8">
+    <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+    <children>
+        <HBox spacing="8" alignment="CENTER_LEFT">
             <children>
-                <TableView fx:id="table" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="usernameColumn" text="Username">
-                            <cellValueFactory><PropertyValueFactory property="username" /></cellValueFactory>
-                        </TableColumn>
-                        <TableColumn fx:id="balanceColumn" text="Balance">
-                            <cellValueFactory><PropertyValueFactory property="balance" /></cellValueFactory>
-                        </TableColumn>
-                        <TableColumn fx:id="blockedColumn" text="Blocked">
-                            <cellValueFactory><PropertyValueFactory property="blocked" /></cellValueFactory>
-                        </TableColumn>
-                    </columns>
-                </TableView>
+                <MFXButton fx:id="loadButton" text="Upload Events File..." onAction="#onLoadClicked" styleClass="bordered-button" />
+                <Label fx:id="filePathLabel" text="(no file uploaded)" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                       style="-fx-border-color: gray; -fx-border-radius: 4; -fx-padding: 6 10 6 10;" />
+                <MFXProgressBar fx:id="progressBar" progress="0" visible="false" managed="false" />
+                <Label fx:id="progressLabel" />
             </children>
-        </VBox>
-        <ScrollPane fitToWidth="true">
-            <content>
-                <VBox fx:id="detailContainer">
-                    <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
-                    <children>
-                        <Label text="Select a user to see their details." />
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </items>
-</SplitPane>
+        </HBox>
+        <SplitPane dividerPositions="0.32" VBox.vgrow="ALWAYS">
+            <items>
+                <SplitPane orientation="VERTICAL" dividerPositions="0.45">
+                    <items>
+                        <VBox spacing="4">
+                            <padding><Insets top="6" right="6" bottom="6" left="6" /></padding>
+                            <children>
+                                <Label text="Other users:" style="-fx-font-weight: bold;" />
+                                <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="usernameColumn" text="Username">
+                                            <cellValueFactory><PropertyValueFactory property="username" /></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="balanceColumn" text="Balance">
+                                            <cellValueFactory><PropertyValueFactory property="balance" /></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="blockedColumn" text="Blocked">
+                                            <cellValueFactory><PropertyValueFactory property="blocked" /></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="mmColumn" text="Market Maker?" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                        <VBox spacing="4">
+                            <padding><Insets top="6" right="6" bottom="6" left="6" /></padding>
+                            <children>
+                                <Label text="Account Details" style="-fx-font-weight: bold;" />
+                                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <VBox fx:id="accountDetailsBox" spacing="10" />
+                                    </content>
+                                </ScrollPane>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label fx:id="balanceLabel" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-font-weight: bold;" />
+                                        <MFXButton fx:id="depositButton" text="Load Funds" styleClass="bordered-button" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </items>
+                </SplitPane>
+                <SplitPane orientation="VERTICAL" dividerPositions="0.2">
+                    <items>
+                        <VBox spacing="4">
+                            <padding><Insets top="6" right="6" bottom="6" left="6" /></padding>
+                            <children>
+                                <Label text="Events participation / owner:" style="-fx-font-weight: bold;" />
+                                <TableView fx:id="participationsTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="eventNameColumn" text="Event">
+                                            <cellValueFactory><PropertyValueFactory property="eventName" /></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="methodColumn" text="Type">
+                                            <cellValueFactory><PropertyValueFactory property="method" /></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="roleColumn" text="Role">
+                                            <cellValueFactory><PropertyValueFactory property="mm" /></cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                        <VBox fx:id="eventDetailContainer">
+                            <padding><Insets top="6" right="6" bottom="6" left="6" /></padding>
+                            <children>
+                                <Label text="Select an event above to see its details and trade." />
+                            </children>
+                        </VBox>
+                    </items>
+                </SplitPane>
+            </items>
+        </SplitPane>
+    </children>
+</VBox>

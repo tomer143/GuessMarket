@@ -68,6 +68,14 @@ class Manager implements Serializable {
         this.events.add(event);
     }
 
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    public void removeUser(String username) {
+        this.users.removeIf(user -> user.username().equals(username));
+    }
+
     public void addPurchase(Purchase purchase) {
         this.purchases.add(purchase);
     }
@@ -83,11 +91,4 @@ class Manager implements Serializable {
                 .sum();
     }
 
-    public void replaceState(List<Event> newEvents, List<User> newUsers) {
-        this.events = newEvents;
-        this.users = newUsers;
-        this.purchases = new ArrayList<>();
-        this.nextOrderId = 0;
-        this.nextTradeId = 0;
-    }
 }

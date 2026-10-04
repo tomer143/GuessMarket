@@ -9,7 +9,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -25,9 +25,12 @@ class OrderBookEventDetailPane {
         VBox root = new VBox(10);
         root.setPadding(new Insets(10));
 
-        FlowPane books = new FlowPane(12, 12);
-        for (OptionMarketData option : status.options())
-            books.getChildren().add(buildOptionBookPanel(option));
+        HBox books = new HBox(12);
+        for (OptionMarketData option : status.options()) {
+            Node panel = buildOptionBookPanel(option);
+            HBox.setHgrow(panel, Priority.ALWAYS);
+            books.getChildren().add(panel);
+        }
         root.getChildren().add(books);
 
         root.getChildren().add(buildPriceChart(status));
@@ -130,8 +133,8 @@ class OrderBookEventDetailPane {
         VBox panel = new VBox(6);
         panel.setPadding(new Insets(8));
         panel.setStyle("-fx-border-color: gray; -fx-border-radius: 4;");
-        panel.setPrefWidth(280);
-        VBox.setVgrow(panel, Priority.ALWAYS);
+        panel.setMaxWidth(Double.MAX_VALUE);
+        panel.setPrefWidth(0);
 
         Label title = new Label(option.optionName());
         title.setStyle("-fx-font-weight: bold;");

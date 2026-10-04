@@ -52,7 +52,7 @@ class LmsrEvent extends Event {
         if (requester.balance() < subsidy)
             throw new GuessMarketException("You do not have enough balance to open event \"" + this.name + "\" (requires " + subsidy + ").");
 
-        requester.adjustBalance(-subsidy);
+        requester.adjustBalance(-subsidy, "Paid LMSR subsidy to open event \"" + this.name + "\"");
         this.accountBalance = subsidy;
         this.phase = EventPhase.ACTIVE;
     }
@@ -72,7 +72,7 @@ class LmsrEvent extends Event {
         double sharesCost = getPrice(option, amount);
         double feeAmount = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * sharesCost : 0;
 
-        buyer.adjustBalance(-(sharesCost + feeAmount));
+        buyer.adjustBalance(-(sharesCost + feeAmount), "Bought " + amount + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
         this.accountBalance += sharesCost + feeAmount;
         this.totalFeeCollected += feeAmount;
 
@@ -105,11 +105,11 @@ class LmsrEvent extends Event {
 
         for (Map.Entry<String, Integer> entry : winnerShares.entrySet()) {
             double holderPayout = entry.getValue() * (1 - (this.feeCollection == FeeCollection.OnClose ? this.feePercent / 100.0 : 0));
-            Manager.getInstance().getUserByUsername(entry.getKey()).adjustBalance(holderPayout);
+            Manager.getInstance().getUserByUsername(entry.getKey()).adjustBalance(holderPayout, "Payout from closed event \"" + this.name + "\"");
         }
 
         double mmRefund = this.accountBalance - payout;
-        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(mmRefund);
+        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(mmRefund, "Refund of remaining subsidy from closed event \"" + this.name + "\"");
         this.accountBalance = 0;
 
         this.phase = EventPhase.CLOSED;

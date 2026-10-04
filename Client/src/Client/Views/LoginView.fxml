@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="Client.Views.LoginController"
+      alignment="CENTER" spacing="12">
+    <children>
+        <Label text="Guess Market" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+        <MFXTextField fx:id="usernameField" floatMode="ABOVE" floatingText="Username" prefWidth="240" />
+        <MFXButton fx:id="loginButton" text="Log In" onAction="#onLoginClicked" styleClass="bordered-button" />
+        <Label fx:id="errorLabel" style="-fx-text-fill: #e53935;" wrapText="true" />
+    </children>
+    <padding><Insets top="40" right="40" bottom="40" left="40" /></padding>
+</VBox>

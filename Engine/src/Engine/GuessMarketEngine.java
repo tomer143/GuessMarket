@@ -2,13 +2,50 @@ package Engine;
 
 import Models.External.*;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuessMarketEngine {
 
     public void loadEventsFile(String path) throws GuessMarketException {
-        EventFileLoader.load(path);
+        EventFileLoader.loadFromFile(path);
+    }
+
+    public void uploadEventsFile(InputStream content, String uploaderUsername) throws GuessMarketException {
+        EventFileLoader.loadFromStream(content, uploaderUsername);
+    }
+
+    public void registerUser(String username) throws GuessMarketException {
+        if (username == null || username.isBlank())
+            throw new GuessMarketException("Username cannot be blank.");
+        String trimmed = username.trim();
+
+        boolean exists = Manager.getInstance().getUsers().stream()
+                .anyMatch(user -> user.username().equalsIgnoreCase(trimmed));
+        if (exists)
+            throw new GuessMarketException("Username \"" + trimmed + "\" already exists. Please choose a different username.");
+
+        Manager.getInstance().addUser(new User(trimmed, 0));
+    }
+
+    public void logout(String username) {
+        Manager.getInstance().removeUser(username);
+    }
+
+    public void depositFunds(String username, double amount) throws GuessMarketException {
+        if (amount <= 0)
+            throw new GuessMarketException("The deposit amount must be a positive number.");
+
+        User user = Manager.getInstance().getUserByUsername(username);
+        user.adjustBalance(amount, "Deposited funds");
+    }
+
+    public List<BalanceLedgerEntry> getUserBalanceLedger(String username) throws GuessMarketException {
+        User user = Manager.getInstance().getUserByUsername(username);
+        return user.ledger().stream()
+                .map(line -> new BalanceLedgerEntry(line.description(), line.amount(), line.resultingBalance()))
+                .toList();
     }
 
     public List<EventDetails> getAllEvents() {
@@ -215,11 +252,11 @@ public class GuessMarketEngine {
 
     public List<BalanceHistoryPoint> getUserBalanceHistory(String username) throws GuessMarketException {
         User user = Manager.getInstance().getUserByUsername(username);
-        List<Double> history = user.balanceHistory();
+        List<BalanceLedgerLine> ledger = user.ledger();
 
         List<BalanceHistoryPoint> points = new ArrayList<>();
-        for (int i = 0; i < history.size(); i++)
-            points.add(new BalanceHistoryPoint(i, history.get(i)));
+        for (int i = 0; i < ledger.size(); i++)
+            points.add(new BalanceHistoryPoint(i, ledger.get(i).resultingBalance()));
 
         return points;
     }
