@@ -1,6 +1,7 @@
 package Client.Views;
 
 import Engine.ClientGuessMarketEngine;
+import Engine.Http.ApiClient;
 import Client.Format;
 import Client.Tasks.Background;
 import Client.Views.Dialogs.AlertUtils;
@@ -22,6 +23,7 @@ import javafx.scene.layout.VBox;
 
 class EventDetailPane extends BorderPane {
     private double dividerPosition = 0.68;
+    private String shownSnapshotJson;
 
     private final ClientGuessMarketEngine engine;
     private final int eventId;
@@ -80,6 +82,11 @@ class EventDetailPane extends BorderPane {
     }
 
     private void show(Snapshot snapshot) {
+        String snapshotJson = ApiClient.GSON.toJson(snapshot);
+        if (snapshotJson.equals(shownSnapshotJson))
+            return;
+        shownSnapshotJson = snapshotJson;
+
         EventDetails event = snapshot.event;
         if (event == null) {
             setCenter(new Label("This event is no longer available."));
