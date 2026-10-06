@@ -7,6 +7,7 @@ import Client.Format;
 import Client.Models.LedgerRow;
 import Client.Models.ParticipationRow;
 import Client.Models.UserRow;
+import Client.Tasks.Background;
 import Client.Tasks.LoadEventsFileTask;
 import Client.Views.Dialogs.AlertUtils;
 import Client.Views.Dialogs.DepositDialog;
@@ -152,25 +153,26 @@ public class UsersViewController {
         progressBar.setManaged(false);
     }
 
-    private void refreshOwnAccount() {
-        try {
-            UserDetails details = engine.getUserDetails(currentUsername);
-            balanceLabel.setText("Account balance: " + Format.decimal(details.balance()) + (details.blocked() ? "   (BLOCKED)" : ""));
-
-            List<BalanceLedgerEntry> ledger = engine.getUserBalanceLedger(currentUsername);
-            if (ledger.size() != shownLedgerSize) {
-                boolean firstBuild = shownLedgerSize < 0;
-                shownLedgerSize = ledger.size();
-                VBox content = new VBox(10, buildBalanceChart(engine.getUserBalanceHistory(currentUsername)), buildLedgerTable(ledger));
-                accountDetailsBox.getChildren().setAll(content);
-                if (firstBuild) Animations.fadeIn(content, Duration.millis(250));
-            }
-
-            updateParticipations(details.participations());
-            AlertUtils.clearReportedError("Could not load user details");
-        } catch (GuessMarketException exception) {
-            AlertUtils.showErrorOnce("Could not load user details", exception.getMessage());
+    private void showOwnAccount(Snapshot snapshot) {
+        if (snapshot.accountError != null) {
+            AlertUtils.showErrorOnce("Could not load user details", snapshot.accountError);
+            return;
         }
+
+        UserDetails details = snapshot.details;
+        balanceLabel.setText("Account balance: " + Format.decimal(details.balance()) + (details.blocked() ? "   (BLOCKED)" : ""));
+
+        List<BalanceLedgerEntry> ledger = snapshot.ledger;
+        if (ledger.size() != shownLedgerSize) {
+            boolean firstBuild = shownLedgerSize < 0;
+            shownLedgerSize = ledger.size();
+            VBox content = new VBox(10, buildBalanceChart(snapshot.balanceHistory), buildLedgerTable(ledger));
+            accountDetailsBox.getChildren().setAll(content);
+            if (firstBuild) Animations.fadeIn(content, Duration.millis(250));
+        }
+
+        updateParticipations(details.participations());
+        AlertUtils.clearReportedError("Could not load user details");
     }
 
     private void updateParticipations(List<UserEventParticipation> latest) {
@@ -267,9 +269,43 @@ public class UsersViewController {
         return chart;
     }
 
+    private static class Snapshot {
+        private final List<UserSummary> users;
+        private final Set<String> mmUsernames;
+        private final UserDetails details;
+        private final List<BalanceLedgerEntry> ledger;
+        private final List<BalanceHistoryPoint> balanceHistory;
+        private final String accountError;
+
+        private Snapshot(List<UserSummary> users, Set<String> mmUsernames, UserDetails details,
+                         List<BalanceLedgerEntry> ledger, List<BalanceHistoryPoint> balanceHistory, String accountError) {
+            this.users = users;
+            this.mmUsernames = mmUsernames;
+            this.details = details;
+            this.ledger = ledger;
+            this.balanceHistory = balanceHistory;
+            this.accountError = accountError;
+        }
+    }
+
     public void refresh() {
-        List<UserSummary> latest = engine.getAllUsers();
-        mmUsernames = engine.getAllEvents().stream().map(EventDetails::mmUsername).collect(Collectors.toSet());
+        Background.fetch(this::fetchSnapshot, this::show, Exception::printStackTrace);
+    }
+
+    private Snapshot fetchSnapshot() {
+        List<UserSummary> users = engine.getAllUsers();
+        Set<String> mmUsernames = engine.getAllEvents().stream().map(EventDetails::mmUsername).collect(Collectors.toSet());
+        try {
+            return new Snapshot(users, mmUsernames, engine.getUserDetails(currentUsername),
+                    engine.getUserBalanceLedger(currentUsername), engine.getUserBalanceHistory(currentUsername), null);
+        } catch (GuessMarketException exception) {
+            return new Snapshot(users, mmUsernames, null, null, null, exception.getMessage());
+        }
+    }
+
+    private void show(Snapshot snapshot) {
+        List<UserSummary> latest = snapshot.users;
+        mmUsernames = snapshot.mmUsernames;
 
         List<UserSummary> others = latest.stream().filter(user -> !user.username().equals(currentUsername)).toList();
 
@@ -280,6 +316,6 @@ public class UsersViewController {
         rows.removeIf(row -> others.stream().noneMatch(source -> source.username().equals(row.username())));
         table.refresh();
 
-        refreshOwnAccount();
+        showOwnAccount(snapshot);
     }
 }

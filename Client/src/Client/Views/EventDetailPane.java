@@ -2,6 +2,7 @@ package Client.Views;
 
 import Engine.ClientGuessMarketEngine;
 import Client.Format;
+import Client.Tasks.Background;
 import Client.Views.Dialogs.AlertUtils;
 import Client.Views.Dialogs.BuySharesDialog;
 import Client.Views.Dialogs.CloseEventDialog;
@@ -32,11 +33,54 @@ class EventDetailPane extends BorderPane {
         this.eventId = eventId;
         this.contextUsername = contextUsername;
         this.onDataChanged = onDataChanged;
+        setCenter(new Label("Loading..."));
         refresh();
     }
 
+    private static class Snapshot {
+        private final EventDetails event;
+        private final EventStatus lmsrStatus;
+        private final LmsrParticipation lmsrParticipation;
+        private final OrderBookStatus orderBookStatus;
+        private final OrderBookParticipation orderBookParticipation;
+        private final String error;
+
+        private Snapshot(EventDetails event, EventStatus lmsrStatus, LmsrParticipation lmsrParticipation,
+                         OrderBookStatus orderBookStatus, OrderBookParticipation orderBookParticipation, String error) {
+            this.event = event;
+            this.lmsrStatus = lmsrStatus;
+            this.lmsrParticipation = lmsrParticipation;
+            this.orderBookStatus = orderBookStatus;
+            this.orderBookParticipation = orderBookParticipation;
+            this.error = error;
+        }
+    }
+
     public void refresh() {
+        Background.fetch(this::fetchSnapshot, this::show, Exception::printStackTrace);
+    }
+
+    private Snapshot fetchSnapshot() {
         EventDetails event = engine.getAllEvents().stream().filter(e -> e.id() == eventId).findFirst().orElse(null);
+        if (event == null)
+            return new Snapshot(null, null, null, null, null, null);
+
+        try {
+            if (event.method() == TradingMethod.LMSR) {
+                EventStatus status = engine.getEventStatus(event.id());
+                LmsrParticipation participation = contextUsername == null ? null : engine.getUserLmsrParticipation(event.id(), contextUsername);
+                return new Snapshot(event, status, participation, null, null, null);
+            }
+            OrderBookStatus status = engine.getOrderBookStatus(event.id());
+            OrderBookParticipation participation = contextUsername == null ? null : engine.getUserOrderBookParticipation(event.id(), contextUsername);
+            return new Snapshot(event, null, null, status, participation, null);
+        } catch (GuessMarketException exception) {
+            return new Snapshot(event, null, null, null, null, exception.getMessage());
+        }
+    }
+
+    private void show(Snapshot snapshot) {
+        EventDetails event = snapshot.event;
         if (event == null) {
             setCenter(new Label("This event is no longer available."));
             return;
@@ -78,41 +122,42 @@ class EventDetailPane extends BorderPane {
 
         setTop(new VBox(header, actions));
 
-        try {
-            Node market;
-            Node participation = null;
-            if (event.method() == TradingMethod.LMSR) {
-                market = LmsrEventDetailPane.build(engine.getEventStatus(event.id()));
-                if (contextUsername != null)
-                    participation = LmsrEventDetailPane.buildParticipation(engine.getUserLmsrParticipation(event.id(), contextUsername));
-            } else {
-                market = OrderBookEventDetailPane.build(engine.getOrderBookStatus(event.id()));
-                if (contextUsername != null)
-                    participation = OrderBookEventDetailPane.buildParticipation(engine.getUserOrderBookParticipation(event.id(), contextUsername));
-            }
-
-            if (participation == null) {
-                setCenter(market);
-            } else {
-                Label participationTitle = new Label("Participations information");
-                participationTitle.setStyle("-fx-font-weight: bold;");
-                participationTitle.setPadding(new Insets(0, 10, 0, 10));
-
-                VBox participationBox = new VBox(6, participationTitle, participation);
-                VBox.setVgrow(participation, Priority.ALWAYS);
-
-                if (getCenter() instanceof SplitPane previous && previous.getDividers().size() == 1)
-                    dividerPosition = previous.getDividerPositions()[0];
-
-                SplitPane split = new SplitPane(market, participationBox);
-                split.setOrientation(Orientation.VERTICAL);
-                split.setDividerPositions(dividerPosition);
-                setCenter(split);
-            }
-            AlertUtils.clearReportedError("Could not load event status");
-        } catch (GuessMarketException exception) {
-            AlertUtils.showErrorOnce("Could not load event status", exception.getMessage());
+        if (snapshot.error != null) {
+            AlertUtils.showErrorOnce("Could not load event status", snapshot.error);
+            return;
         }
+
+        Node market;
+        Node participation = null;
+        if (event.method() == TradingMethod.LMSR) {
+            market = LmsrEventDetailPane.build(snapshot.lmsrStatus);
+            if (snapshot.lmsrParticipation != null)
+                participation = LmsrEventDetailPane.buildParticipation(snapshot.lmsrParticipation);
+        } else {
+            market = OrderBookEventDetailPane.build(snapshot.orderBookStatus);
+            if (snapshot.orderBookParticipation != null)
+                participation = OrderBookEventDetailPane.buildParticipation(snapshot.orderBookParticipation);
+        }
+
+        if (participation == null) {
+            setCenter(market);
+        } else {
+            Label participationTitle = new Label("Participations information");
+            participationTitle.setStyle("-fx-font-weight: bold;");
+            participationTitle.setPadding(new Insets(0, 10, 0, 10));
+
+            VBox participationBox = new VBox(6, participationTitle, participation);
+            VBox.setVgrow(participation, Priority.ALWAYS);
+
+            if (getCenter() instanceof SplitPane previous && previous.getDividers().size() == 1)
+                dividerPosition = previous.getDividerPositions()[0];
+
+            SplitPane split = new SplitPane(market, participationBox);
+            split.setOrientation(Orientation.VERTICAL);
+            split.setDividerPositions(dividerPosition);
+            setCenter(split);
+        }
+        AlertUtils.clearReportedError("Could not load event status");
     }
 
     private void afterAction() {

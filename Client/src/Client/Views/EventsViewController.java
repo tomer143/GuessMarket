@@ -5,6 +5,7 @@ import Engine.ClientGuessMarketEngine;
 import Client.Animations;
 import Client.Format;
 import Client.Models.EventRow;
+import Client.Tasks.Background;
 import Client.Views.Components.FilterButtonGroup;
 import Client.Views.Dialogs.CreateEventDialog;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -106,8 +107,10 @@ public class EventsViewController {
     }
 
     public void refresh() {
-        List<EventDetails> latest = engine.getAllEvents();
+        Background.fetch(engine::getAllEvents, this::showEvents, Exception::printStackTrace);
+    }
 
+    private void showEvents(List<EventDetails> latest) {
         for (EventDetails source : latest) {
             rows.stream().filter(row -> row.id() == source.id()).findFirst()
                     .ifPresentOrElse(row -> row.update(source), () -> rows.add(new EventRow(source)));

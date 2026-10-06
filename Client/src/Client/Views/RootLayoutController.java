@@ -2,6 +2,7 @@ package Client.Views;
 
 import Engine.ClientGuessMarketEngine;
 import Client.Animations;
+import Client.Tasks.Background;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
@@ -63,7 +64,8 @@ public class RootLayoutController {
         pollTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(RootLayoutController.this::refreshAll);
+                if (Background.isIdle())
+                    Platform.runLater(RootLayoutController.this::refreshAll);
             }
         }, POLL_INTERVAL_MILLIS, POLL_INTERVAL_MILLIS);
     }
