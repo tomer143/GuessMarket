@@ -28,7 +28,10 @@ public class BuySharesServlet extends HttpServlet {
             int optionIndex = ServletUtils.requireIntParam(request, "optionIndex");
             int amount = ServletUtils.requireIntParam(request, "amount");
 
-            PurchaseResult result = ServletUtils.getEngine(getServletContext()).buyShares(eventId, optionIndex, amount, username);
+            PurchaseResult result;
+            synchronized (ServletUtils.engineAccessLock) {
+                result = ServletUtils.getEngine(getServletContext()).buyShares(eventId, optionIndex, amount, username);
+            }
             ServletUtils.writeJson(response, result);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

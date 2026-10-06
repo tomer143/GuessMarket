@@ -19,7 +19,10 @@ public class UserLedgerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String username = ServletUtils.requireStringParam(request, "username");
-            List<BalanceLedgerEntry> ledger = ServletUtils.getEngine(getServletContext()).getUserBalanceLedger(username);
+            List<BalanceLedgerEntry> ledger;
+            synchronized (ServletUtils.engineAccessLock) {
+                ledger = ServletUtils.getEngine(getServletContext()).getUserBalanceLedger(username);
+            }
             ServletUtils.writeJson(response, ledger);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

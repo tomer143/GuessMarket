@@ -31,7 +31,10 @@ public class SubmitOrderServlet extends HttpServlet {
             int quantity = ServletUtils.requireIntParam(request, "quantity");
             double price = ServletUtils.requireDoubleParam(request, "price");
 
-            OrderResult result = ServletUtils.getEngine(getServletContext()).submitOrder(eventId, optionIndex, side, quantity, price, username);
+            OrderResult result;
+            synchronized (ServletUtils.engineAccessLock) {
+                result = ServletUtils.getEngine(getServletContext()).submitOrder(eventId, optionIndex, side, quantity, price, username);
+            }
             ServletUtils.writeJson(response, result);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

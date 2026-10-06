@@ -18,7 +18,10 @@ public class UserDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String username = ServletUtils.requireStringParam(request, "username");
-            UserDetails details = ServletUtils.getEngine(getServletContext()).getUserDetails(username);
+            UserDetails details;
+            synchronized (ServletUtils.engineAccessLock) {
+                details = ServletUtils.getEngine(getServletContext()).getUserDetails(username);
+            }
             ServletUtils.writeJson(response, details);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

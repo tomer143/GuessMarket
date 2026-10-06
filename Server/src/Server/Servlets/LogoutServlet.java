@@ -21,7 +21,9 @@ public class LogoutServlet extends HttpServlet {
             return;
         }
 
-        ServletUtils.getEngine(getServletContext()).logout(username);
+        synchronized (ServletUtils.engineAccessLock) {
+            ServletUtils.getEngine(getServletContext()).logout(username);
+        }
         SessionUtils.clearSession(request);
         response.setStatus(HttpServletResponse.SC_OK);
     }

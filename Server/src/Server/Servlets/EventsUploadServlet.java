@@ -33,7 +33,9 @@ public class EventsUploadServlet extends HttpServlet {
                 throw new GuessMarketException("Missing required file part \"file\".");
 
             try (InputStream inputStream = filePart.getInputStream()) {
-                ServletUtils.getEngine(getServletContext()).uploadEventsFile(inputStream, username);
+                synchronized (ServletUtils.engineAccessLock) {
+                    ServletUtils.getEngine(getServletContext()).uploadEventsFile(inputStream, username);
+                }
             }
 
             response.setStatus(HttpServletResponse.SC_OK);

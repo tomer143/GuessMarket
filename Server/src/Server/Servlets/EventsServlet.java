@@ -22,7 +22,10 @@ public class EventsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<EventDetails> events = ServletUtils.getEngine(getServletContext()).getAllEvents();
+        List<EventDetails> events;
+        synchronized (ServletUtils.engineAccessLock) {
+            events = ServletUtils.getEngine(getServletContext()).getAllEvents();
+        }
         ServletUtils.writeJson(response, events);
     }
 
@@ -48,12 +51,16 @@ public class EventsServlet extends HttpServlet {
 
             if (method == TradingMethod.LMSR) {
                 int liquidityB = ServletUtils.requireIntParam(request, "liquidityB");
-                eventId = engine.createLmsrEvent(name, description, feePercent, feeCollection, optionAName, optionBName, liquidityB, creatorUsername);
+                synchronized (ServletUtils.engineAccessLock) {
+                    eventId = engine.createLmsrEvent(name, description, feePercent, feeCollection, optionAName, optionBName, liquidityB, creatorUsername);
+                }
             } else {
                 int baseValue = ServletUtils.requireIntParam(request, "baseValue");
                 int initialAmount = ServletUtils.requireIntParam(request, "initialAmount");
                 boolean allowMint = ServletUtils.requireBooleanParam(request, "allowMint");
-                eventId = engine.createOrderBookEvent(name, description, feePercent, feeCollection, optionAName, optionBName, baseValue, initialAmount, allowMint, creatorUsername);
+                synchronized (ServletUtils.engineAccessLock) {
+                    eventId = engine.createOrderBookEvent(name, description, feePercent, feeCollection, optionAName, optionBName, baseValue, initialAmount, allowMint, creatorUsername);
+                }
             }
 
             ServletUtils.writeJson(response, Map.of("eventId", eventId));

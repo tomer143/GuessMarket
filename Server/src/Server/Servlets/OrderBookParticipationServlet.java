@@ -20,7 +20,10 @@ public class OrderBookParticipationServlet extends HttpServlet {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
             String username = ServletUtils.requireStringParam(request, "username");
 
-            OrderBookParticipation participation = ServletUtils.getEngine(getServletContext()).getUserOrderBookParticipation(eventId, username);
+            OrderBookParticipation participation;
+            synchronized (ServletUtils.engineAccessLock) {
+                participation = ServletUtils.getEngine(getServletContext()).getUserOrderBookParticipation(eventId, username);
+            }
             ServletUtils.writeJson(response, participation);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

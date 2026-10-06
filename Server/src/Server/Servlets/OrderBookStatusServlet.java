@@ -18,7 +18,10 @@ public class OrderBookStatusServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
-            OrderBookStatus status = ServletUtils.getEngine(getServletContext()).getOrderBookStatus(eventId);
+            OrderBookStatus status;
+            synchronized (ServletUtils.engineAccessLock) {
+                status = ServletUtils.getEngine(getServletContext()).getOrderBookStatus(eventId);
+            }
             ServletUtils.writeJson(response, status);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

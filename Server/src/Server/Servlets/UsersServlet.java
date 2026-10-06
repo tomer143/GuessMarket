@@ -16,7 +16,10 @@ public class UsersServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<UserSummary> users = ServletUtils.getEngine(getServletContext()).getAllUsers();
+        List<UserSummary> users;
+        synchronized (ServletUtils.engineAccessLock) {
+            users = ServletUtils.getEngine(getServletContext()).getAllUsers();
+        }
         ServletUtils.writeJson(response, users);
     }
 }

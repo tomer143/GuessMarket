@@ -20,7 +20,10 @@ public class LmsrParticipationServlet extends HttpServlet {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
             String username = ServletUtils.requireStringParam(request, "username");
 
-            LmsrParticipation participation = ServletUtils.getEngine(getServletContext()).getUserLmsrParticipation(eventId, username);
+            LmsrParticipation participation;
+            synchronized (ServletUtils.engineAccessLock) {
+                participation = ServletUtils.getEngine(getServletContext()).getUserLmsrParticipation(eventId, username);
+            }
             ServletUtils.writeJson(response, participation);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

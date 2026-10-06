@@ -18,7 +18,10 @@ public class LmsrStatusServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
-            EventStatus status = ServletUtils.getEngine(getServletContext()).getEventStatus(eventId);
+            EventStatus status;
+            synchronized (ServletUtils.engineAccessLock) {
+                status = ServletUtils.getEngine(getServletContext()).getEventStatus(eventId);
+            }
             ServletUtils.writeJson(response, status);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

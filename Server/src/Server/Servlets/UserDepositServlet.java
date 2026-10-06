@@ -19,7 +19,9 @@ public class UserDepositServlet extends HttpServlet {
             String username = ServletUtils.requireStringParam(request, "username");
             double amount = ServletUtils.requireDoubleParam(request, "amount");
 
-            ServletUtils.getEngine(getServletContext()).depositFunds(username, amount);
+            synchronized (ServletUtils.engineAccessLock) {
+                ServletUtils.getEngine(getServletContext()).depositFunds(username, amount);
+            }
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

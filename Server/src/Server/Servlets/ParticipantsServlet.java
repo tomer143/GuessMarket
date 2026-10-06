@@ -19,7 +19,10 @@ public class ParticipantsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
-            List<ParticipantSummary> participants = ServletUtils.getEngine(getServletContext()).getOrderBookParticipants(eventId);
+            List<ParticipantSummary> participants;
+            synchronized (ServletUtils.engineAccessLock) {
+                participants = ServletUtils.getEngine(getServletContext()).getOrderBookParticipants(eventId);
+            }
             ServletUtils.writeJson(response, participants);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

@@ -14,6 +14,7 @@ public class ServletUtils {
 
     private static final String ENGINE_ATTRIBUTE_NAME = "guessMarketEngine";
     private static final Object engineLock = new Object();
+    public static final Object engineAccessLock = new Object();
     private static final Gson GSON = new Gson();
 
     public static GuessMarketEngine getEngine(ServletContext servletContext) {

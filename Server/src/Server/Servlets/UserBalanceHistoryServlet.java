@@ -19,7 +19,10 @@ public class UserBalanceHistoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String username = ServletUtils.requireStringParam(request, "username");
-            List<BalanceHistoryPoint> history = ServletUtils.getEngine(getServletContext()).getUserBalanceHistory(username);
+            List<BalanceHistoryPoint> history;
+            synchronized (ServletUtils.engineAccessLock) {
+                history = ServletUtils.getEngine(getServletContext()).getUserBalanceHistory(username);
+            }
             ServletUtils.writeJson(response, history);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

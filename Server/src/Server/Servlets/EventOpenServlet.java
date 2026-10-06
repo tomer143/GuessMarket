@@ -24,7 +24,9 @@ public class EventOpenServlet extends HttpServlet {
 
         try {
             int eventId = ServletUtils.requireIntParam(request, "eventId");
-            ServletUtils.getEngine(getServletContext()).openEvent(eventId, username);
+            synchronized (ServletUtils.engineAccessLock) {
+                ServletUtils.getEngine(getServletContext()).openEvent(eventId, username);
+            }
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (GuessMarketException exception) {
             ServletUtils.writeError(response, exception);

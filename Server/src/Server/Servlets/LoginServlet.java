@@ -18,7 +18,9 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
         try {
-            ServletUtils.getEngine(getServletContext()).registerUser(username);
+            synchronized (ServletUtils.engineAccessLock) {
+                ServletUtils.getEngine(getServletContext()).registerUser(username);
+            }
             SessionUtils.setUsername(request, username.trim());
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (GuessMarketException exception) {
