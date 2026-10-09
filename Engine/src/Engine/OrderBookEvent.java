@@ -95,7 +95,7 @@ class OrderBookEvent extends Event {
         if (quantity <= 0)
             throw new GuessMarketException("The quantity must be a positive number.");
 
-        if (price <= 0 || price > this.baseValue - 0.01)
+        if (!(price > 0 && price <= this.baseValue - 0.01))
             throw new GuessMarketException("The price must be greater than 0 and at most " + (this.baseValue - 0.01) + ".");
 
         Option option = getOptionByIndex(optionIndex);

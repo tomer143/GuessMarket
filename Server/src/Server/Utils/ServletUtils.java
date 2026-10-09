@@ -64,11 +64,15 @@ public class ServletUtils {
 
     public static double requireDoubleParam(HttpServletRequest request, String name) throws GuessMarketException {
         String value = requireStringParam(request, name);
+        double parsed;
         try {
-            return Double.parseDouble(value);
+            parsed = Double.parseDouble(value);
         } catch (NumberFormatException exception) {
             throw new GuessMarketException("Parameter \"" + name + "\" must be a valid number.");
         }
+        if (!Double.isFinite(parsed))
+            throw new GuessMarketException("Parameter \"" + name + "\" must be a valid number.");
+        return parsed;
     }
 
     public static boolean requireBooleanParam(HttpServletRequest request, String name) throws GuessMarketException {

@@ -70,6 +70,9 @@ class LmsrEvent extends Event {
 
         Option option = getOptionByIndex(optionIndex);
         double sharesCost = getPrice(option, amount);
+        if (!(sharesCost > 0) || Double.isInfinite(sharesCost))
+            throw new GuessMarketException("The amount of shares is too large.");
+
         double feeAmount = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * sharesCost : 0;
 
         buyer.adjustBalance(-(sharesCost + feeAmount), "Bought " + amount + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");

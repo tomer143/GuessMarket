@@ -34,7 +34,7 @@ public class GuessMarketEngine {
     }
 
     public void depositFunds(String username, double amount) throws GuessMarketException {
-        if (amount <= 0)
+        if (!(amount > 0) || Double.isInfinite(amount))
             throw new GuessMarketException("The deposit amount must be a positive number.");
 
         User user = Manager.getInstance().getUserByUsername(username);
