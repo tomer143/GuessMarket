@@ -73,7 +73,10 @@ public class RootLayoutController {
     @FXML
     private void onLogoutClicked() {
         if (pollTimer != null) pollTimer.cancel();
-        engine.logout();
+        Background.fetch(() -> {
+            engine.logout();
+            return null;
+        }, result -> {}, Exception::printStackTrace);
         onLogout.run();
     }
 }

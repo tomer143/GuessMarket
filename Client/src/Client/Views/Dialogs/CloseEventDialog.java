@@ -1,6 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -32,17 +33,16 @@ public class CloseEventDialog {
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
             String username = controller.usernameProperty().get().trim();
             int winningIndex = controller.winningOptionIndexProperty().get();
-            try {
+            Background.fetch(() -> {
                 if (event.method() == TradingMethod.LMSR)
                     engine.closeEvent(event.id(), winningIndex, username);
                 else
                     engine.closeOrderBookEvent(event.id(), winningIndex, username);
-
+                return null;
+            }, result -> {
                 AlertUtils.showInfo("Event closed", "\"" + event.name() + "\" has been closed.");
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not close the event", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not close the event", exception.getMessage()));
         });
     }
 }

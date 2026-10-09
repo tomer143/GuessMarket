@@ -1,6 +1,6 @@
 package Client.Views.Dialogs;
 
-import Models.External.GuessMarketException;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -37,13 +37,13 @@ public class DepositDialog {
                 return;
             }
 
-            try {
+            Background.fetch(() -> {
                 engine.depositFunds(username, amount);
+                return null;
+            }, result -> {
                 AlertUtils.showInfo("Deposit successful", "Deposited " + amount + " into your account.");
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not deposit funds", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not deposit funds", exception.getMessage()));
         });
     }
 }

@@ -1,6 +1,6 @@
 package Client.Views;
 
-import Models.External.GuessMarketException;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -26,12 +26,14 @@ public class LoginController {
     private void onLoginClicked() {
         String username = usernameField.getText() == null ? "" : usernameField.getText().trim();
         errorLabel.setText(null);
+        loginButton.setDisable(true);
 
-        try {
+        Background.fetch(() -> {
             engine.registerUser(username);
-            onSuccess.accept(engine, username);
-        } catch (GuessMarketException exception) {
+            return null;
+        }, result -> onSuccess.accept(engine, username), exception -> {
+            loginButton.setDisable(false);
             errorLabel.setText(exception.getMessage());
-        }
+        });
     }
 }

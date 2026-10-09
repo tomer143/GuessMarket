@@ -1,6 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import Client.Format;
 import javafx.fxml.FXMLLoader;
@@ -31,17 +32,17 @@ public class BuySharesDialog {
         controller.init(defaultUsername == null ? "" : defaultUsername, event.optionNames());
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            try {
-                PurchaseResult result = engine.buyShares(event.id(), controller.optionIndexProperty().get(),
-                        controller.amountProperty().get(), controller.usernameProperty().get().trim());
+            int optionIndex = controller.optionIndexProperty().get();
+            int amount = controller.amountProperty().get();
+            String username = controller.usernameProperty().get().trim();
+
+            Background.fetch(() -> engine.buyShares(event.id(), optionIndex, amount, username), result -> {
                 AlertUtils.showInfo("Purchase successful",
                         "Shares cost: " + Format.decimal(result.sharesCost()) +
                         "\nFee: " + Format.decimal(result.feeAmount()) +
                         "\nTotal paid: " + Format.decimal(result.totalPaid()));
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not complete the purchase", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not complete the purchase", exception.getMessage()));
         });
     }
 }

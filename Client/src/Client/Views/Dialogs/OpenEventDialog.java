@@ -1,6 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -30,13 +31,15 @@ public class OpenEventDialog {
         controller.setDefaultUsername(event.mmUsername());
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            try {
-                engine.openEvent(event.id(), controller.usernameProperty().get().trim());
+            String username = controller.usernameProperty().get().trim();
+
+            Background.fetch(() -> {
+                engine.openEvent(event.id(), username);
+                return null;
+            }, result -> {
                 AlertUtils.showInfo("Event opened", "\"" + event.name() + "\" is now active.");
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not open the event", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not open the event", exception.getMessage()));
         });
     }
 }

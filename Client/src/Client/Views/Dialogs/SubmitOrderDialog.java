@@ -1,6 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -38,17 +39,18 @@ public class SubmitOrderDialog {
                 return;
             }
 
-            try {
-                OrderResult result = engine.submitOrder(event.id(), controller.optionIndexProperty().get(), controller.sideProperty().get(),
-                        controller.quantityProperty().get(), price, controller.usernameProperty().get().trim());
+            int optionIndex = controller.optionIndexProperty().get();
+            OrderAction side = controller.sideProperty().get();
+            int quantity = controller.quantityProperty().get();
+            String username = controller.usernameProperty().get().trim();
+
+            Background.fetch(() -> engine.submitOrder(event.id(), optionIndex, side, quantity, price, username), result -> {
                 String summary = result.fills().isEmpty()
                         ? "No immediate match. " + result.unfilledQuantity() + " share(s) now resting in the order book."
                         : result.fills().size() + " fill(s), " + result.unfilledQuantity() + " share(s) still unfilled.";
                 AlertUtils.showInfo("Order submitted", summary);
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not submit the order", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not submit the order", exception.getMessage()));
         });
     }
 }

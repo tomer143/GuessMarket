@@ -1,6 +1,7 @@
 package Client.Views.Dialogs;
 
 import Models.External.*;
+import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
@@ -31,29 +32,29 @@ public class CreateEventDialog {
         CreateEventDialogController controller = loader.getController();
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            try {
-                String creatorUsername = controller.usernameProperty().get().trim();
-                String name = controller.eventNameProperty().get().trim();
-                String description = controller.descriptionProperty().get().trim();
-                int feePercent = controller.feePercentProperty().get();
-                String optionAName = controller.optionANameProperty().get().trim();
-                String optionBName = controller.optionBNameProperty().get().trim();
+            String creatorUsername = controller.usernameProperty().get().trim();
+            String name = controller.eventNameProperty().get().trim();
+            String description = controller.descriptionProperty().get().trim();
+            int feePercent = controller.feePercentProperty().get();
+            FeeCollection feeCollection = controller.feeCollectionProperty().get();
+            String optionAName = controller.optionANameProperty().get().trim();
+            String optionBName = controller.optionBNameProperty().get().trim();
+            TradingMethod method = controller.methodProperty().get();
+            int liquidity = controller.liquidityProperty().get();
+            int baseValue = controller.baseValueProperty().get();
+            int initialAmount = controller.initialAmountProperty().get();
+            boolean allowMint = controller.allowMintProperty().get();
 
-                int eventId;
-                if (controller.methodProperty().get() == TradingMethod.LMSR) {
-                    eventId = engine.createLmsrEvent(name, description, feePercent, controller.feeCollectionProperty().get(),
-                            optionAName, optionBName, controller.liquidityProperty().get(), creatorUsername);
-                } else {
-                    eventId = engine.createOrderBookEvent(name, description, feePercent, controller.feeCollectionProperty().get(),
-                            optionAName, optionBName, controller.baseValueProperty().get(), controller.initialAmountProperty().get(),
-                            controller.allowMintProperty().get(), creatorUsername);
-                }
-
+            Background.fetch(() -> {
+                if (method == TradingMethod.LMSR)
+                    return engine.createLmsrEvent(name, description, feePercent, feeCollection,
+                            optionAName, optionBName, liquidity, creatorUsername);
+                return engine.createOrderBookEvent(name, description, feePercent, feeCollection,
+                        optionAName, optionBName, baseValue, initialAmount, allowMint, creatorUsername);
+            }, eventId -> {
                 AlertUtils.showInfo("Event created", "\"" + name + "\" was created (id " + eventId + "). You are now its market maker.");
                 onSuccess.run();
-            } catch (GuessMarketException exception) {
-                AlertUtils.showError("Could not create the event", exception.getMessage());
-            }
+            }, exception -> AlertUtils.showError("Could not create the event", exception.getMessage()));
         });
     }
 }
