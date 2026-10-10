@@ -99,7 +99,6 @@ class OrderBookEventDetailPane {
 
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle("Price history");
-        chart.setCreateSymbols(false);
         chart.setAnimated(false);
         chart.setPrefHeight(220);
 
@@ -120,6 +119,7 @@ class OrderBookEventDetailPane {
             maxIndex = Math.max(maxIndex, index);
             series.getData().add(new XYChart.Data<>(index, trade.price()));
         }
+        chart.setCreateSymbols(tradeCountByOption.values().stream().anyMatch(count -> count < 2));
         chart.getData().addAll(seriesByOption.values());
 
         xAxis.setAutoRanging(false);

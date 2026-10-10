@@ -113,7 +113,6 @@ class LmsrEventDetailPane {
 
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle("Price history");
-        chart.setCreateSymbols(false);
         chart.setAnimated(false);
         chart.setPrefHeight(220);
 
@@ -132,6 +131,7 @@ class LmsrEventDetailPane {
 
             index++;
         }
+        chart.setCreateSymbols(index < 2);
         chart.getData().addAll(seriesByOption.values());
 
         xAxis.setAutoRanging(false);

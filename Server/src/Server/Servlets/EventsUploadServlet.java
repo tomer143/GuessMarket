@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @WebServlet("/events/upload")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 20, maxRequestSize = 1024 * 1024 * 25)
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 25, maxFileSize = 1024 * 1024 * 20, maxRequestSize = 1024 * 1024 * 25)
 public class EventsUploadServlet extends HttpServlet {
 
     @Override
@@ -31,6 +31,10 @@ public class EventsUploadServlet extends HttpServlet {
             Part filePart = request.getPart("file");
             if (filePart == null)
                 throw new GuessMarketException("Missing required file part \"file\".");
+
+            String fileName = filePart.getSubmittedFileName();
+            if (fileName == null || !fileName.toLowerCase().endsWith(".xml"))
+                throw new GuessMarketException("The file must have an \".xml\" extension.");
 
             try (InputStream inputStream = filePart.getInputStream()) {
                 synchronized (ServletUtils.engineAccessLock) {

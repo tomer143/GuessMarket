@@ -3,7 +3,7 @@ import Modal from '../Modal.jsx';
 import { api } from '../../api.js';
 import { useAction } from './useAction.js';
 
-export default function DepositDialog({ username, onClose, onDone }) {
+export default function DepositDialog({ onClose, onDone }) {
   const [amount, setAmount] = useState('');
   const { busy, error, setError, run } = useAction();
 
@@ -14,7 +14,7 @@ export default function DepositDialog({ username, onClose, onDone }) {
       return;
     }
     run(async () => {
-      await api.deposit(username, value);
+      await api.deposit(value);
       onDone('Deposit successful', `Deposited ${amount.trim()} into your account.`);
     });
   };

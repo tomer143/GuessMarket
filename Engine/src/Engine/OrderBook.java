@@ -55,6 +55,11 @@ class OrderBook implements Serializable {
         }
     }
 
+    public void clearOrders() {
+        this.bids.clear();
+        this.asks.clear();
+    }
+
     public void recordTrade(double price) {
         this.lastTradePrice = price;
     }

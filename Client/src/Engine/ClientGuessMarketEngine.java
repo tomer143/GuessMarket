@@ -20,6 +20,8 @@ public class ClientGuessMarketEngine {
 
     public void loadEventsFile(String path) throws GuessMarketException {
         File file = new File(path);
+        if (!file.isFile())
+            throw new GuessMarketException("The file \"" + path + "\" does not exist.");
         RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/xml"));
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

@@ -224,6 +224,8 @@ public class UsersViewController {
         amountColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("amount"));
         TableColumn<LedgerRow, Number> balanceColumn = new TableColumn<>("Balance");
         balanceColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("resultingBalance"));
+        amountColumn.setCellFactory(column -> decimalCell());
+        balanceColumn.setCellFactory(column -> decimalCell());
         table.getColumns().addAll(descriptionColumn, amountColumn, balanceColumn);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
@@ -239,6 +241,16 @@ public class UsersViewController {
         table.setMaxHeight(Region.USE_PREF_SIZE);
 
         return table;
+    }
+
+    private static TableCell<LedgerRow, Number> decimalCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(Number item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : Format.decimal(item.doubleValue()));
+            }
+        };
     }
 
     private static LineChart<Number, Number> buildBalanceChart(List<BalanceHistoryPoint> history) {

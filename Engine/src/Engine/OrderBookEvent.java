@@ -98,6 +98,9 @@ class OrderBookEvent extends Event {
         if (!(price > 0 && price <= this.baseValue - 0.01))
             throw new GuessMarketException("The price must be greater than 0 and at most " + (this.baseValue - 0.01) + ".");
 
+        if (Math.abs(price * 100 - Math.round(price * 100)) > 1e-9)
+            throw new GuessMarketException("The price can have at most 2 digits after the decimal point.");
+
         Option option = getOptionByIndex(optionIndex);
 
         User account = Manager.getInstance().getUserByUsername(username);
@@ -263,6 +266,9 @@ class OrderBookEvent extends Event {
         marketMaker.adjustBalance(this.accountBalance, "Remaining balance refunded from closed event \"" + this.name + "\"");
         participantNetFlow.merge(this.mmUsername, this.accountBalance, Double::sum);
         this.accountBalance = 0;
+
+        for (OrderBook book : this.books)
+            book.clearOrders();
 
         this.phase = EventPhase.CLOSED;
         this.winningOption = winner;
