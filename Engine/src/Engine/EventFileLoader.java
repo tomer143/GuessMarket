@@ -157,6 +157,8 @@ class EventFileLoader {
                     throw new GuessMarketException("Event \"" + eventName + "\" has an option with a missing or blank name.");
                 options.add(new Option(i + 1, optionName.trim()));
             }
+            if (options.get(0).name().equalsIgnoreCase(options.get(1).name()))
+                throw new GuessMarketException("Event \"" + eventName + "\" has two options with the same name \"" + options.get(0).name() + "\".");
 
             GMMethod gmMethod = eventElement.getGMMethod();
             if (gmMethod == null)
