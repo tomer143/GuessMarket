@@ -2,6 +2,7 @@ package Server.Servlets;
 
 import Models.External.GuessMarketException;
 import Server.Utils.ServletUtils;
+import Server.Utils.SessionUtils;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,8 +16,13 @@ public class UserDepositServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String username = SessionUtils.getUsername(request);
+        if (username == null) {
+            ServletUtils.writeError(response, HttpServletResponse.SC_UNAUTHORIZED, "You must be logged in to load funds.");
+            return;
+        }
+
         try {
-            String username = ServletUtils.requireStringParam(request, "username");
             double amount = ServletUtils.requireDoubleParam(request, "amount");
 
             synchronized (ServletUtils.engineAccessLock) {
