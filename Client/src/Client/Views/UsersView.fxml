@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -18,7 +19,7 @@
     <children>
         <HBox spacing="8" alignment="CENTER_LEFT">
             <children>
-                <MFXButton fx:id="loadButton" text="Upload Events File..." onAction="#onLoadClicked" styleClass="bordered-button" />
+                <MFXButton fx:id="loadButton" text="Upload Events File..." minWidth="-Infinity" onAction="#onLoadClicked" styleClass="bordered-button" />
                 <Label fx:id="filePathLabel" text="(no file uploaded)" HBox.hgrow="ALWAYS" maxWidth="Infinity"
                        style="-fx-border-color: gray; -fx-border-radius: 4; -fx-padding: 6 10 6 10;" />
                 <MFXProgressBar fx:id="progressBar" progress="0" visible="false" managed="false" />
@@ -58,12 +59,12 @@
                                         <VBox fx:id="accountDetailsBox" spacing="10" />
                                     </content>
                                 </ScrollPane>
-                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                <FlowPane hgap="8" vgap="4" alignment="CENTER_LEFT">
                                     <children>
-                                        <Label fx:id="balanceLabel" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-font-weight: bold;" />
-                                        <MFXButton fx:id="depositButton" text="Load Funds" styleClass="bordered-button" />
+                                        <Label fx:id="balanceLabel" minWidth="-Infinity" style="-fx-font-weight: bold;" />
+                                        <MFXButton fx:id="depositButton" text="Load Funds" minWidth="-Infinity" styleClass="bordered-button" />
                                     </children>
-                                </HBox>
+                                </FlowPane>
                             </children>
                         </VBox>
                     </items>

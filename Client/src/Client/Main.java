@@ -16,6 +16,8 @@ public class Main extends Application {
     private static final String LOGIN_VIEW_FXML_PATH = "Views/LoginView.fxml";
     private static final String ROOT_LAYOUT_FXML_PATH = "Views/RootLayout.fxml";
 
+    private ClientGuessMarketEngine loggedInEngine;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -48,7 +50,14 @@ public class Main extends Application {
         setScene(primaryStage, root, 480, 360);
     }
 
+    @Override
+    public void stop() {
+        if (loggedInEngine != null)
+            loggedInEngine.logout();
+    }
+
     private void showRootLayout(Stage primaryStage, ClientGuessMarketEngine engine, String username) throws Exception {
+        loggedInEngine = engine;
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource(ROOT_LAYOUT_FXML_PATH);
         fxmlLoader.setLocation(url);
@@ -56,6 +65,7 @@ public class Main extends Application {
 
         RootLayoutController controller = fxmlLoader.getController();
         controller.init(engine, username, () -> {
+            loggedInEngine = null;
             try {
                 showLogin(primaryStage);
             } catch (Exception exception) {

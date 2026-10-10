@@ -9,12 +9,14 @@ class User implements Serializable {
     private final String username;
     private double balance;
     private boolean blocked;
+    private boolean online;
     private final List<BalanceLedgerLine> ledger = new ArrayList<>();
 
     public User(String username, double balance) {
         this.username = username;
         this.balance = balance;
         this.blocked = false;
+        this.online = true;
         this.ledger.add(new BalanceLedgerLine("Initial balance", balance, balance));
     }
 
@@ -30,11 +32,25 @@ class User implements Serializable {
         return blocked;
     }
 
+    public boolean online() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
     public void adjustBalance(double delta, String description) {
         this.balance += delta;
         if (this.balance < 0)
             this.blocked = true;
         this.ledger.add(new BalanceLedgerLine(description, delta, this.balance));
+    }
+
+    public void deposit(double amount) {
+        adjustBalance(amount, "Deposited funds");
+        if (this.balance >= 0)
+            this.blocked = false;
     }
 
     public List<BalanceLedgerLine> ledger() {

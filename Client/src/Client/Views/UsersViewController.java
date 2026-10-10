@@ -103,7 +103,7 @@ public class UsersViewController {
             showSelectedEvent();
         });
 
-        depositButton.setOnAction(e -> DepositDialog.show(engine, currentUsername, onDataChanged));
+        depositButton.setOnAction(e -> DepositDialog.show(engine, onDataChanged));
     }
 
     public void init(ClientGuessMarketEngine engine, String currentUsername, Runnable onDataChanged) {

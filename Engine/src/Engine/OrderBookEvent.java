@@ -164,11 +164,9 @@ class OrderBookEvent extends Event {
 
         buyer.adjustBalance(-(tradeValue + feeAmount), "Bought " + quantity + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
         seller.adjustBalance(tradeValue, "Sold " + quantity + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
-        this.accountBalance += feeAmount;
-        this.totalFeeCollected += feeAmount;
         participantNetFlow.merge(buyerUsername, -(tradeValue + feeAmount), Double::sum);
         participantNetFlow.merge(sellerUsername, tradeValue, Double::sum);
-        if (feeAmount > 0) participantFeesPaid.merge(buyerUsername, feeAmount, Double::sum);
+        collectFee(feeAmount, buyerUsername);
 
         getOrCreateHolding(buyerUsername, option).applyBuy(quantity, tradeValue);
         getOrCreateHolding(sellerUsername, option).applySell(quantity, tradeValue);
@@ -214,12 +212,11 @@ class OrderBookEvent extends Event {
 
         incomingAccount.adjustBalance(-(quantity * priceA + feeA), "Bought " + quantity + " share(s) of \"" + option.name() + "\" (minted) in event \"" + this.name + "\"");
         restingAccount.adjustBalance(-(quantity * priceB + feeB), "Bought " + quantity + " share(s) of \"" + other.name() + "\" (minted) in event \"" + this.name + "\"");
-        this.accountBalance += quantity * priceA + quantity * priceB + feeA + feeB;
-        this.totalFeeCollected += feeA + feeB;
+        this.accountBalance += quantity * priceA + quantity * priceB;
         participantNetFlow.merge(incomingUsername, -(quantity * priceA + feeA), Double::sum);
         participantNetFlow.merge(restingUsername, -(quantity * priceB + feeB), Double::sum);
-        if (feeA > 0) participantFeesPaid.merge(incomingUsername, feeA, Double::sum);
-        if (feeB > 0) participantFeesPaid.merge(restingUsername, feeB, Double::sum);
+        collectFee(feeA, incomingUsername);
+        collectFee(feeB, restingUsername);
 
         getOrCreateHolding(incomingUsername, option).applyBuy(quantity, quantity * priceA);
         getOrCreateHolding(restingUsername, other).applyBuy(quantity, quantity * priceB);
@@ -243,21 +240,27 @@ class OrderBookEvent extends Event {
 
         Option winner = getOptionByIndex(winningOptionIndex);
 
-        for (Holding holding : this.holdings) {
-            if (holding.optionId() != winner.id() || holding.quantity() <= 0) continue;
+        List<Holding> winningHoldings = this.holdings.stream()
+                .filter(holding -> holding.optionId() == winner.id() && holding.quantity() > 0)
+                .toList();
+        Map<Holding, User> holders = new java.util.LinkedHashMap<>();
+        for (Holding holding : winningHoldings)
+            holders.put(holding, Manager.getInstance().getUserByUsername(holding.username()));
+        User marketMaker = Manager.getInstance().getUserByUsername(this.mmUsername);
 
+        for (Map.Entry<Holding, User> entry : holders.entrySet()) {
+            Holding holding = entry.getKey();
             double grossPayout = holding.quantity() * this.baseValue;
             double feeAmount = this.feeCollection == FeeCollection.OnClose ? this.feePercent / 100.0 * grossPayout : 0;
             double netPayout = grossPayout - feeAmount;
 
-            this.totalFeeCollected += feeAmount;
-            this.accountBalance -= netPayout;
-            Manager.getInstance().getUserByUsername(holding.username()).adjustBalance(netPayout, "Payout from closed event \"" + this.name + "\"");
+            this.accountBalance -= grossPayout;
+            entry.getValue().adjustBalance(netPayout, "Payout from closed event \"" + this.name + "\"");
             participantNetFlow.merge(holding.username(), netPayout, Double::sum);
-            if (feeAmount > 0) participantFeesPaid.merge(holding.username(), feeAmount, Double::sum);
+            collectFee(feeAmount, holding.username());
         }
 
-        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(this.accountBalance, "Remaining balance refunded from closed event \"" + this.name + "\"");
+        marketMaker.adjustBalance(this.accountBalance, "Remaining balance refunded from closed event \"" + this.name + "\"");
         participantNetFlow.merge(this.mmUsername, this.accountBalance, Double::sum);
         this.accountBalance = 0;
 
@@ -323,6 +326,15 @@ class OrderBookEvent extends Event {
         return usernames.stream()
                 .map(username -> new ParticipantSummary(username, getHoldings(username)))
                 .toList();
+    }
+
+    private void collectFee(double feeAmount, String payerUsername) throws GuessMarketException {
+        if (feeAmount <= 0)
+            return;
+
+        payCommissionToMm(feeAmount, payerUsername);
+        participantFeesPaid.merge(payerUsername, feeAmount, Double::sum);
+        participantNetFlow.merge(this.mmUsername, feeAmount, Double::sum);
     }
 
     private OrderBook getBookForOption(Option option) {

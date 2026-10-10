@@ -30,9 +30,12 @@ public class ClientGuessMarketEngine {
         executeAndReadBody(request);
     }
 
-    public void registerUser(String username) throws GuessMarketException {
+    public String registerUser(String username) throws GuessMarketException {
         HttpUrl url = urlBuilder("login").addQueryParameter("username", username).build();
-        executeAndReadBody(new Request.Builder().url(url).post(RequestBody.create(new byte[0])).build());
+        String body = executeAndReadBody(new Request.Builder().url(url).post(RequestBody.create(new byte[0])).build());
+        Type type = new TypeToken<Map<String, String>>() {}.getType();
+        Map<String, String> parsed = ApiClient.GSON.fromJson(body, type);
+        return parsed.get("username");
     }
 
     public void logout() {
@@ -44,9 +47,8 @@ public class ClientGuessMarketEngine {
         }
     }
 
-    public void depositFunds(String username, double amount) throws GuessMarketException {
+    public void depositFunds(double amount) throws GuessMarketException {
         HttpUrl url = urlBuilder("user/deposit")
-                .addQueryParameter("username", username)
                 .addQueryParameter("amount", String.valueOf(amount))
                 .build();
         executeAndReadBody(new Request.Builder().url(url).post(RequestBody.create(new byte[0])).build());

@@ -53,5 +53,5 @@ export const api = {
   getUser: (username) => get('/user', { username }),
   getBalanceHistory: (username) => get('/user/balance-history', { username }),
   getLedger: (username) => get('/user/ledger', { username }),
-  deposit: (username, amount) => post('/user/deposit', { username, amount }),
+  deposit: (amount) => post('/user/deposit', { amount }),
 };

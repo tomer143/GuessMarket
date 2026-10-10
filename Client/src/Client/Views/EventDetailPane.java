@@ -98,19 +98,25 @@ class EventDetailPane extends BorderPane {
         Label title = new Label(event.name() + "  (id " + event.id() + ")");
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         header.getChildren().add(title);
-        header.getChildren().add(new Label(event.description()));
-        header.getChildren().add(new Label("Type: " + Format.method(event.method())
+        title.setWrapText(true);
+        Label description = new Label(event.description());
+        description.setWrapText(true);
+        Label info = new Label("Type: " + Format.method(event.method())
                 + "   Status: " + Format.phase(event.phase())
                 + "   Fee: " + event.feePercent() + "% (" + Format.feeCollection(event.feeCollection()) + ")"
-                + "   Market maker: " + event.mmUsername()));
+                + "   Market maker: " + event.mmUsername());
+        info.setWrapText(true);
+        header.getChildren().addAll(description, info);
 
         HBox actions = new HBox(8);
         actions.setPadding(new Insets(0, 10, 10, 10));
 
-        if (event.phase() == EventPhase.NOT_ACTIVE) {
+        boolean isMarketMaker = event.mmUsername() != null && event.mmUsername().equals(contextUsername);
+
+        if (event.phase() == EventPhase.NOT_ACTIVE && isMarketMaker) {
             MFXButton openButton = new MFXButton("Open Event");
             openButton.getStyleClass().add("bordered-button");
-            openButton.setOnAction(e -> OpenEventDialog.show(engine, event, this::afterAction));
+            openButton.setOnAction(e -> OpenEventDialog.show(engine, event, contextUsername, this::afterAction));
             actions.getChildren().add(openButton);
         } else if (event.phase() == EventPhase.ACTIVE) {
             MFXButton tradeButton = new MFXButton(event.method() == TradingMethod.LMSR ? "Buy Shares" : "Submit Order");
@@ -121,10 +127,13 @@ class EventDetailPane extends BorderPane {
                 else
                     SubmitOrderDialog.show(engine, event, contextUsername, this::afterAction);
             });
-            MFXButton closeButton = new MFXButton("Close Event");
-            closeButton.getStyleClass().add("bordered-button");
-            closeButton.setOnAction(e -> CloseEventDialog.show(engine, event, this::afterAction));
-            actions.getChildren().addAll(tradeButton, closeButton);
+            actions.getChildren().add(tradeButton);
+            if (isMarketMaker) {
+                MFXButton closeButton = new MFXButton("Close Event");
+                closeButton.getStyleClass().add("bordered-button");
+                closeButton.setOnAction(e -> CloseEventDialog.show(engine, event, contextUsername, this::afterAction));
+                actions.getChildren().add(closeButton);
+            }
         }
 
         setTop(new VBox(header, actions));

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class DepositDialog {
-    public static void show(ClientGuessMarketEngine engine, String username, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(DepositDialog.class.getResource("DepositDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -38,7 +38,7 @@ public class DepositDialog {
             }
 
             Background.fetch(() -> {
-                engine.depositFunds(username, amount);
+                engine.depositFunds(amount);
                 return null;
             }, result -> {
                 AlertUtils.showInfo("Deposit successful", "Deposited " + amount + " into your account.");

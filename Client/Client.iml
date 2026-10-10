@@ -10,5 +10,7 @@
     <orderEntry type="library" name="javafx.base" level="project" />
     <orderEntry type="module" module-name="Models" />
     <orderEntry type="library" name="materialfx-11.17.0" level="project" />
+    <orderEntry type="library" name="okhttp-4.9.1" level="project" />
+    <orderEntry type="library" name="gson-2.1" level="project" />
   </component>
 </module>

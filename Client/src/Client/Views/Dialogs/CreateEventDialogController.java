@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 
 public class CreateEventDialogController {
-    @FXML private MFXTextField usernameField;
     @FXML private MFXTextField nameField;
     @FXML private MFXTextField descriptionField;
     @FXML private Spinner<Integer> feeSpinner;
@@ -30,7 +29,6 @@ public class CreateEventDialogController {
     @FXML private Spinner<Integer> initialAmountSpinner;
     @FXML private MFXToggleButton allowMintToggle;
 
-    private final StringProperty username = new SimpleStringProperty();
     private final StringProperty eventName = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
     private final IntegerProperty feePercent = new SimpleIntegerProperty();
@@ -58,7 +56,6 @@ public class CreateEventDialogController {
         methodChoice.selectFirst();
         updateMethodFieldsVisibility(methodChoice.selectedItemProperty().get());
 
-        username.bind(usernameField.textProperty());
         eventName.bind(nameField.textProperty());
         description.bind(descriptionField.textProperty());
         feePercent.bind(feeSpinner.valueProperty());
@@ -78,10 +75,6 @@ public class CreateEventDialogController {
         lmsrFieldsBox.setManaged(isLmsr);
         orderBookFieldsBox.setVisible(!isLmsr);
         orderBookFieldsBox.setManaged(!isLmsr);
-    }
-
-    public StringProperty usernameProperty() {
-        return username;
     }
 
     public StringProperty eventNameProperty() {

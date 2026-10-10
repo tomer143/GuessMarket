@@ -13,8 +13,8 @@ export default function Login({ onLoggedIn }) {
     setError('');
     setBusy(true);
     try {
-      await api.login(username);
-      onLoggedIn(username);
+      const result = await api.login(username);
+      onLoggedIn(result.username);
     } catch (err) {
       setError(err.message);
     } finally {

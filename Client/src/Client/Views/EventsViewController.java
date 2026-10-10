@@ -67,7 +67,7 @@ public class EventsViewController {
         this.username = username;
         this.onDataChanged = onDataChanged;
 
-        createEventButton.setOnAction(event -> CreateEventDialog.show(engine, onDataChanged));
+        createEventButton.setOnAction(event -> CreateEventDialog.show(engine, username, onDataChanged));
 
         FilterButtonGroup<TradingMethod, EventRow> typeFilter = new FilterButtonGroup<>("Type",
                 List.of(TradingMethod.LMSR, TradingMethod.ORDER_BOOK), Format::method, (option, row) -> row.method() == option);

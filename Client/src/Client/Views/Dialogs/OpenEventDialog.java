@@ -3,36 +3,28 @@ package Client.Views.Dialogs;
 import Models.External.*;
 import Client.Tasks.Background;
 import Engine.ClientGuessMarketEngine;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import javafx.scene.control.Label;
 
 public class OpenEventDialog {
-    public static void show(ClientGuessMarketEngine engine, EventDetails event, Runnable onSuccess) {
-        FXMLLoader loader = new FXMLLoader(OpenEventDialog.class.getResource("OpenEventDialog.fxml"));
-
+    public static void show(ClientGuessMarketEngine engine, EventDetails event, String username, Runnable onSuccess) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Open Event");
-        dialog.setHeaderText("Open \"" + event.name() + "\" as its market maker (" + event.mmUsername() + ")");
+        dialog.setHeaderText("Open \"" + event.name() + "\" as its market maker?");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        try {
-            dialog.getDialogPane().setContent(loader.load());
-        } catch (IOException exception) {
-            throw new UncheckedIOException(exception);
-        }
+        Label message = new Label("Opening makes the event active for trading. The opening cost (LMSR subsidy or "
+                + "initial share purchase) is charged to your account.");
+        message.setWrapText(true);
+        message.setMaxWidth(380);
+        message.setPadding(new Insets(12));
+        dialog.getDialogPane().setContent(message);
 
         DialogStyling.applyTheme(dialog.getDialogPane());
 
-        OpenEventDialogController controller = loader.getController();
-        controller.setDefaultUsername(event.mmUsername());
-
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            String username = controller.usernameProperty().get().trim();
-
             Background.fetch(() -> {
                 engine.openEvent(event.id(), username);
                 return null;

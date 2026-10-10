@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class CloseEventDialog {
-    public static void show(ClientGuessMarketEngine engine, EventDetails event, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, EventDetails event, String username, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(CloseEventDialog.class.getResource("CloseEventDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -28,10 +28,9 @@ public class CloseEventDialog {
         DialogStyling.applyTheme(dialog.getDialogPane());
 
         CloseEventDialogController controller = loader.getController();
-        controller.init(event.mmUsername(), event.optionNames());
+        controller.init(event.optionNames());
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            String username = controller.usernameProperty().get().trim();
             int winningIndex = controller.winningOptionIndexProperty().get();
             Background.fetch(() -> {
                 if (event.method() == TradingMethod.LMSR)

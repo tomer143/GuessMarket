@@ -76,8 +76,8 @@ class LmsrEvent extends Event {
         double feeAmount = this.feeCollection == FeeCollection.OnPurchase ? this.feePercent / 100.0 * sharesCost : 0;
 
         buyer.adjustBalance(-(sharesCost + feeAmount), "Bought " + amount + " share(s) of \"" + option.name() + "\" in event \"" + this.name + "\"");
-        this.accountBalance += sharesCost + feeAmount;
-        this.totalFeeCollected += feeAmount;
+        this.accountBalance += sharesCost;
+        payCommissionToMm(feeAmount, username);
 
         Purchase purchase = new Purchase(this.id, amount, sharesCost, feeAmount, option, username);
         Manager.getInstance().addPurchase(purchase);
@@ -93,26 +93,26 @@ class LmsrEvent extends Event {
             throw new GuessMarketException("Event \"" + this.name + "\" is not active and cannot be closed.");
 
         Option winner = getOptionByIndex(winningOptionIndex);
-        int totalWinningShares = Manager.getInstance().getOptionTotalShares(this.id, winner.id());
-
-        double feeAmount = this.feeCollection == FeeCollection.OnClose
-                ? this.feePercent / 100.0 * totalWinningShares
-                : 0;
-        double payout = totalWinningShares - feeAmount;
-
-        this.totalFeeCollected += feeAmount;
+        double feeRate = this.feeCollection == FeeCollection.OnClose ? this.feePercent / 100.0 : 0;
 
         Map<String, Integer> winnerShares = Manager.getInstance().getPurchasesByEventId(this.id).stream()
                 .filter(purchase -> purchase.option().id() == winner.id())
                 .collect(Collectors.groupingBy(Purchase::username, Collectors.summingInt(Purchase::amount)));
 
-        for (Map.Entry<String, Integer> entry : winnerShares.entrySet()) {
-            double holderPayout = entry.getValue() * (1 - (this.feeCollection == FeeCollection.OnClose ? this.feePercent / 100.0 : 0));
-            Manager.getInstance().getUserByUsername(entry.getKey()).adjustBalance(holderPayout, "Payout from closed event \"" + this.name + "\"");
+        Map<User, Integer> winners = new java.util.LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : winnerShares.entrySet())
+            winners.put(Manager.getInstance().getUserByUsername(entry.getKey()), entry.getValue());
+        User marketMaker = Manager.getInstance().getUserByUsername(this.mmUsername);
+
+        for (Map.Entry<User, Integer> entry : winners.entrySet()) {
+            double grossPayout = entry.getValue();
+            double feeAmount = feeRate * grossPayout;
+            this.accountBalance -= grossPayout;
+            entry.getKey().adjustBalance(grossPayout - feeAmount, "Payout from closed event \"" + this.name + "\"");
+            payCommissionToMm(feeAmount, entry.getKey().username());
         }
 
-        double mmRefund = this.accountBalance - payout;
-        Manager.getInstance().getUserByUsername(this.mmUsername).adjustBalance(mmRefund, "Refund of remaining subsidy from closed event \"" + this.name + "\"");
+        marketMaker.adjustBalance(this.accountBalance, "Refund of remaining subsidy from closed event \"" + this.name + "\"");
         this.accountBalance = 0;
 
         this.phase = EventPhase.CLOSED;

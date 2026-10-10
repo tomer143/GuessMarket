@@ -16,29 +16,36 @@ public class GuessMarketEngine {
         EventFileLoader.loadFromStream(content, uploaderUsername);
     }
 
-    public void registerUser(String username) throws GuessMarketException {
+    public String registerUser(String username) throws GuessMarketException {
         if (username == null || username.isBlank())
             throw new GuessMarketException("Username cannot be blank.");
         String trimmed = username.trim();
 
-        boolean exists = Manager.getInstance().getUsers().stream()
-                .anyMatch(user -> user.username().equalsIgnoreCase(trimmed));
-        if (exists)
-            throw new GuessMarketException("Username \"" + trimmed + "\" already exists. Please choose a different username.");
+        User existing = Manager.getInstance().getUsers().stream()
+                .filter(user -> user.username().equalsIgnoreCase(trimmed))
+                .findFirst()
+                .orElse(null);
 
-        Manager.getInstance().addUser(new User(trimmed, 0));
+        if (existing == null) {
+            Manager.getInstance().addUser(new User(trimmed, 0));
+            return trimmed;
+        }
+        if (existing.online())
+            throw new GuessMarketException("Username \"" + existing.username() + "\" already exists. Please choose a different username.");
+
+        existing.setOnline(true);
+        return existing.username();
     }
 
-    public void logout(String username) {
-        Manager.getInstance().removeUser(username);
+    public void logout(String username) throws GuessMarketException {
+        Manager.getInstance().getUserByUsername(username).setOnline(false);
     }
 
     public void depositFunds(String username, double amount) throws GuessMarketException {
         if (!(amount > 0) || Double.isInfinite(amount))
             throw new GuessMarketException("The deposit amount must be a positive number.");
 
-        User user = Manager.getInstance().getUserByUsername(username);
-        user.adjustBalance(amount, "Deposited funds");
+        Manager.getInstance().getUserByUsername(username).deposit(amount);
     }
 
     public List<BalanceLedgerEntry> getUserBalanceLedger(String username) throws GuessMarketException {

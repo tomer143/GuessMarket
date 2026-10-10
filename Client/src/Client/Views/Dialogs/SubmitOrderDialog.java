@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class SubmitOrderDialog {
-    public static void show(ClientGuessMarketEngine engine, EventDetails event, String defaultUsername, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, EventDetails event, String username, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(SubmitOrderDialog.class.getResource("SubmitOrderDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -28,7 +28,7 @@ public class SubmitOrderDialog {
         DialogStyling.applyTheme(dialog.getDialogPane());
 
         SubmitOrderDialogController controller = loader.getController();
-        controller.init(defaultUsername == null ? "" : defaultUsername, event.optionNames());
+        controller.init(event.optionNames());
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
             double price;
@@ -42,7 +42,6 @@ public class SubmitOrderDialog {
             int optionIndex = controller.optionIndexProperty().get();
             OrderAction side = controller.sideProperty().get();
             int quantity = controller.quantityProperty().get();
-            String username = controller.usernameProperty().get().trim();
 
             Background.fetch(() -> engine.submitOrder(event.id(), optionIndex, side, quantity, price, username), result -> {
                 String summary = result.fills().isEmpty()

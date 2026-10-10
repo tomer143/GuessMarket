@@ -72,10 +72,6 @@ class Manager implements Serializable {
         this.users.add(user);
     }
 
-    public void removeUser(String username) {
-        this.users.removeIf(user -> user.username().equals(username));
-    }
-
     public void addPurchase(Purchase purchase) {
         this.purchases.add(purchase);
     }

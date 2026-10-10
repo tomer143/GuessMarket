@@ -11,15 +11,13 @@
           fx:controller="Client.Views.Dialogs.SubmitOrderDialogController" hgap="8" vgap="8">
     <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
     <children>
-        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
-        <MFXTextField fx:id="usernameField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-        <Label text="Option:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <ToggleChoiceBox fx:id="optionChoice" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-        <Label text="Side:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <ToggleChoiceBox fx:id="sideChoice" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-        <Label text="Quantity:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-        <Spinner fx:id="quantitySpinner" editable="true" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-        <Label text="Price per share:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-        <MFXTextField fx:id="priceField" promptText="e.g. 0.50" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+        <Label text="Option:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <ToggleChoiceBox fx:id="optionChoice" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Side:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <ToggleChoiceBox fx:id="sideChoice" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <Label text="Quantity:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <Spinner fx:id="quantitySpinner" editable="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+        <Label text="Price per share:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <MFXTextField fx:id="priceField" promptText="e.g. 0.50" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="3" GridPane.columnIndex="1" />
     </children>
 </GridPane>

@@ -3,6 +3,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -14,6 +15,8 @@
 <SplitPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
            fx:controller="Client.Views.EventsViewController" dividerPositions="0.48">
     <items>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+        <content>
         <VBox spacing="8">
             <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
             <children>
@@ -23,27 +26,29 @@
                     </children>
                 </HBox>
                 <VBox fx:id="filtersContainer" spacing="6" />
-                <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                <TableView fx:id="table" VBox.vgrow="ALWAYS" minHeight="180">
                     <columns>
-                        <TableColumn fx:id="nameColumn" text="Name">
+                        <TableColumn fx:id="nameColumn" prefWidth="190" text="Name">
                             <cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="statusColumn" text="Status">
+                        <TableColumn fx:id="statusColumn" prefWidth="85" text="Status">
                             <cellValueFactory><PropertyValueFactory property="phase" /></cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="typeColumn" text="Type">
+                        <TableColumn fx:id="typeColumn" prefWidth="95" text="Type">
                             <cellValueFactory><PropertyValueFactory property="method" /></cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="feeColumn" text="Fee">
+                        <TableColumn fx:id="feeColumn" prefWidth="130" text="Fee">
                             <cellValueFactory><PropertyValueFactory property="feePercent" /></cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="accountBalanceColumn" text="Account Balance">
+                        <TableColumn fx:id="accountBalanceColumn" prefWidth="120" text="Account Balance">
                             <cellValueFactory><PropertyValueFactory property="accountBalance" /></cellValueFactory>
                         </TableColumn>
                     </columns>
                 </TableView>
             </children>
         </VBox>
+        </content>
+        </ScrollPane>
         <VBox fx:id="detailContainer">
             <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
             <children>

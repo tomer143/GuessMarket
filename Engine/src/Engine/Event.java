@@ -41,6 +41,15 @@ abstract class Event implements Serializable {
         return this.options.get(0).id() == option.id() ? this.options.get(1) : this.options.get(0);
     }
 
+    protected void payCommissionToMm(double feeAmount, String payerUsername) throws GuessMarketException {
+        if (feeAmount <= 0)
+            return;
+
+        this.totalFeeCollected += feeAmount;
+        Manager.getInstance().getUserByUsername(this.mmUsername)
+                .adjustBalance(feeAmount, "Commission from \"" + payerUsername + "\" in event \"" + this.name + "\"");
+    }
+
     protected void validateMm(String requestingUsername) throws GuessMarketException {
         User requester = Manager.getInstance().getUserByUsername(requestingUsername);
 

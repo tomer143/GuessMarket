@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import Client.Views.Components.*?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
@@ -10,9 +9,7 @@
           fx:controller="Client.Views.Dialogs.CloseEventDialogController" hgap="8" vgap="8">
     <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
     <children>
-        <Label text="Acting as user:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER" />
-        <MFXTextField fx:id="usernameField" prefWidth="220" floatMode="DISABLED" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-        <Label text="Winning option:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <ToggleChoiceBox fx:id="optionChoice" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <Label text="Winning option:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <ToggleChoiceBox fx:id="optionChoice" GridPane.rowIndex="0" GridPane.columnIndex="1" />
     </children>
 </GridPane>

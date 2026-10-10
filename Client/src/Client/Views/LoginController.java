@@ -28,10 +28,7 @@ public class LoginController {
         errorLabel.setText(null);
         loginButton.setDisable(true);
 
-        Background.fetch(() -> {
-            engine.registerUser(username);
-            return null;
-        }, result -> onSuccess.accept(engine, username), exception -> {
+        Background.fetch(() -> engine.registerUser(username), storedUsername -> onSuccess.accept(engine, storedUsername), exception -> {
             loginButton.setDisable(false);
             errorLabel.setText(exception.getMessage());
         });

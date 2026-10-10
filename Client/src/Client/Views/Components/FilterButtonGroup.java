@@ -2,7 +2,8 @@ package Client.Views.Components;
 
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FilterButtonGroup<O, V> extends HBox {
+public class FilterButtonGroup<O, V> extends FlowPane {
     private final List<MFXToggleButton> optionButtons = new ArrayList<>();
     private final List<O> optionValues = new ArrayList<>();
     private final MFXToggleButton allButton = new MFXToggleButton("All");
@@ -19,8 +20,10 @@ public class FilterButtonGroup<O, V> extends HBox {
     private boolean suppressChange = false;
 
     public FilterButtonGroup(String label, List<O> options, Function<O, String> labelFor, BiPredicate<O, V> matches) {
-        super(6);
-        getChildren().add(new Label(label + ":"));
+        super(6, 2);
+        Label title = new Label(label + ":");
+        title.setMinWidth(Region.USE_PREF_SIZE);
+        getChildren().add(title);
 
         allButton.setSelected(true);
         allButton.selectedProperty().addListener((observable, wasSelected, isSelected) -> {

@@ -11,13 +11,11 @@ import javafx.scene.control.SpinnerValueFactory;
 import java.util.List;
 
 public class SubmitOrderDialogController {
-    @FXML private MFXTextField usernameField;
     @FXML private ToggleChoiceBox<String> optionChoice;
     @FXML private ToggleChoiceBox<OrderAction> sideChoice;
     @FXML private Spinner<Integer> quantitySpinner;
     @FXML private MFXTextField priceField;
 
-    private final StringProperty username = new SimpleStringProperty();
     private final IntegerProperty optionIndex = new SimpleIntegerProperty();
     private final ObjectProperty<OrderAction> side = new SimpleObjectProperty<>();
     private final IntegerProperty quantity = new SimpleIntegerProperty();
@@ -30,21 +28,15 @@ public class SubmitOrderDialogController {
         sideChoice.setItems(List.of(OrderAction.BUY, OrderAction.SELL), Format::orderAction);
         sideChoice.selectFirst();
 
-        username.bind(usernameField.textProperty());
         optionIndex.bind(optionChoice.selectedIndexProperty());
         side.bind(sideChoice.selectedItemProperty());
         quantity.bind(quantitySpinner.valueProperty());
         priceText.bind(priceField.textProperty());
     }
 
-    public void init(String defaultUsername, List<String> optionNames) {
-        usernameField.setText(defaultUsername);
+    public void init(List<String> optionNames) {
         optionChoice.setItems(optionNames, name -> name);
         optionChoice.selectFirst();
-    }
-
-    public StringProperty usernameProperty() {
-        return username;
     }
 
     public IntegerProperty optionIndexProperty() {

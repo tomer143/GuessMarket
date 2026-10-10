@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class BuySharesDialog {
-    public static void show(ClientGuessMarketEngine engine, EventDetails event, String defaultUsername, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, EventDetails event, String username, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(BuySharesDialog.class.getResource("BuySharesDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -29,12 +29,11 @@ public class BuySharesDialog {
         DialogStyling.applyTheme(dialog.getDialogPane());
 
         BuySharesDialogController controller = loader.getController();
-        controller.init(defaultUsername == null ? "" : defaultUsername, event.optionNames());
+        controller.init(event.optionNames());
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
             int optionIndex = controller.optionIndexProperty().get();
             int amount = controller.amountProperty().get();
-            String username = controller.usernameProperty().get().trim();
 
             Background.fetch(() -> engine.buyShares(event.id(), optionIndex, amount, username), result -> {
                 AlertUtils.showInfo("Purchase successful",

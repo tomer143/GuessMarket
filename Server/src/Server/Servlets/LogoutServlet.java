@@ -1,5 +1,6 @@
 package Server.Servlets;
 
+import Models.External.GuessMarketException;
 import Server.Utils.ServletUtils;
 import Server.Utils.SessionUtils;
 
@@ -21,8 +22,11 @@ public class LogoutServlet extends HttpServlet {
             return;
         }
 
-        synchronized (ServletUtils.engineAccessLock) {
-            ServletUtils.getEngine(getServletContext()).logout(username);
+        try {
+            synchronized (ServletUtils.engineAccessLock) {
+                ServletUtils.getEngine(getServletContext()).logout(username);
+            }
+        } catch (GuessMarketException ignored) {
         }
         SessionUtils.clearSession(request);
         response.setStatus(HttpServletResponse.SC_OK);

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class CreateEventDialog {
-    public static void show(ClientGuessMarketEngine engine, Runnable onSuccess) {
+    public static void show(ClientGuessMarketEngine engine, String creatorUsername, Runnable onSuccess) {
         FXMLLoader loader = new FXMLLoader(CreateEventDialog.class.getResource("CreateEventDialog.fxml"));
 
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -32,7 +32,6 @@ public class CreateEventDialog {
         CreateEventDialogController controller = loader.getController();
 
         dialog.showAndWait().filter(button -> button == ButtonType.OK).ifPresent(button -> {
-            String creatorUsername = controller.usernameProperty().get().trim();
             String name = controller.eventNameProperty().get().trim();
             String description = controller.descriptionProperty().get().trim();
             int feePercent = controller.feePercentProperty().get();
